@@ -1,0 +1,46 @@
+[
+    {
+        "IITB Roll Number": "23B0901",
+        "Name": "Alice Cook",
+        "Year of Study": "3rd",
+        "Age": 22,
+        "Gender": "Female",
+        "Interests": ["Literature", "Art", "Fashion", "Movies", "Sports", "Technology", "Traveling", "Music"],
+        "Hobbies": ["Reading", "Cooking", "Coding", "Painting", "Playing musical instruments", "Photography"],
+        "Email": "alice.cook@gmail.com",
+        "Photo": "https://images.unsplash.com/photo-1671726203454-5d7a5370a9f4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+        "IITB Roll Number": "23B0903",
+        "Name": "Graeme Ivanov",
+        "Year of Study": "2nd",
+        "Age": 20,
+        "Gender": "Male",
+        "Interests": ["Traveling", "Sports", "Movies", "Music"],
+        "Hobbies": ["Playing musical instruments", "Photography"],
+        "Email": "graeme.ivanov@gmail.com",
+        "Photo": "https://images.unsplash.com/photo-1513258496099-48168024aec0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+        "IITB Roll Number": "23B0902",
+        "Name": "Dave Fischer",
+        "Year of Study": "1st",
+        "Age": 19,
+        "Gender": "Male",
+        "Interests": ["Literature", "Technology", "Fashion", "Art"],
+        "Hobbies": ["Reading", "Cooking", "Coding", "Painting"],
+        "Email": "dave.fischer@gmail.com",
+        "Photo": "https://images.unsplash.com/photo-1572293007244-8b60335d2b7d?q=80&w=2012&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+        "IITB Roll Number": "23B0904",
+        "Name": "Jennifer Lopez",
+        "Year of Study": "3rd",
+        "Age": 21,
+        "Gender": "Female",
+        "Interests": ["Literature", "Fashion", "Art", "Sports", "Movies"],
+        "Hobbies": ["Reading"],
+        "Email": "jennifer.lopez@gmail.com",
+        "Photo": "https://images.unsplash.com/photo-1504194699279-06555b45735c?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    }
+]

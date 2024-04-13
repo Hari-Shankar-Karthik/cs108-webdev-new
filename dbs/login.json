@@ -1,0 +1,30 @@
+[
+    {
+        "username": "ABC",
+        "password": "passwordABC",
+        "secret_question": "ABC's secret question...?",
+        "secret_answer": "ABC",
+        "IITB Roll Number": "23B0901"
+    },
+    {
+        "username": "DEF",
+        "password": "passwordDEF",
+        "secret_question": "DEF's secret question...?",
+        "secret_answer": "DEF",
+        "IITB Roll Number": "23B0902"
+    },
+    {
+        "username": "GHI",
+        "password": "passwordGHI",
+        "secret_question": "GHI's secret question...?",
+        "secret_answer": "GHI",
+        "IITB Roll Number": "23B0903"
+    },
+    {
+        "username": "JKL",
+        "password": "passwordJKL",
+        "secret_question": "JKL's secret question...?",
+        "secret_answer": "JKL",
+        "IITB Roll Number": "23B0904"
+    }
+]
