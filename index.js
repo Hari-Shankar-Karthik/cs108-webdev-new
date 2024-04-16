@@ -1,8 +1,43 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const utils = require("./utils");
+const script = require("./script");
 const session = require("express-session");
+const mongoose = require("mongoose");
+const fs = require("fs").promises; // importing the async version of fs
+const Student = require("./models/student");
+const Login = require("./models/login");
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/kavya-is-god')
+    .then(async () => {
+        console.log('MongoDB connected');
+        try {
+            // Clear existing data
+            await Student.deleteMany({});
+            console.log('Existing students data cleared from database');
+            
+            await Login.deleteMany({});
+            console.log('Existing login data cleared from database');
+
+            // Read data from students.json
+            const studentsData = JSON.parse(await fs.readFile('./dbs/students.json', 'utf-8'));
+            // Insert students data into database
+            await Student.insertMany(studentsData);
+            console.log('New students data inserted into database');
+
+            // Read data from login.json
+            const loginData = JSON.parse(await fs.readFile('./dbs/login.json', 'utf-8'));
+            // Insert login data into database
+            await Login.insertMany(loginData);
+            console.log('New login data inserted into database');
+        } catch (err) {
+            console.error('Error:', err);
+        }
+    })
+    .catch(err => {
+        console.error('MongoDB connection error:', err)
+    });
 
 // set up the view engine
 app.set("view engine", "ejs");
@@ -29,13 +64,29 @@ app.listen(8000, () => {
 });
 
 // dummy route - for debugging only
-app.get("/", (req, res) => {
-    res.send("Hello.");
+app.get("/", async (req, res) => {
+    try {
+        const all_logins = await Login.find({})
+        const all_students = await Student.find({})
+        console.log(all_logins);
+        console.log(all_students);
+        res.send("Hello World");
+    } catch(err) {
+        console.log(err);
+        res.send("Error");
+    }
 });
 
 // show the login page
 app.get("/login", (req, res) => {
-    res.render("login");
+    const {username} = req.session;
+    console.log(`pre-filled username: ${username}`)
+    req.session.destroy(err => {
+        if (err) {
+            console.log(err);
+        }
+    });
+    res.render("login", {username});
 });
 
 // handling request to login
@@ -43,17 +94,20 @@ app.get("/login", (req, res) => {
 app.post("/login", async (req, res) => {
     const {username, password} = req.body;
     console.log(`username: ${username}, password: ${password}`);
-    utils.validate_login(username, password)
-        .then(iitb_roll_number => {
-            // TODO: Pass on iitb_roll_number to the dashboard
-            console.log(`${iitb_roll_number} logged in successfully.`)
-            req.session.iitb_roll_number = iitb_roll_number;
-            res.redirect("/dashboard");
+    Login.findOne({username, password})
+        .then(login => {
+            if(!login) {
+                throw new Error("Invalid credentials");
+            } else {
+                console.log(`${login["IITB Roll Number"]} logged in successfully.`);
+                req.session.iitb_roll_number = login["IITB Roll Number"];
+                res.redirect("/dashboard");
+            }
         })
         .catch(err => {
             console.log(err);
             res.redirect("/login");
-        })
+        });
 });
 
 // show the "forgot password: enter your username" page
@@ -66,10 +120,13 @@ app.post("/secret-question", async (req, res) => {
     const {username} = req.body;
     console.log(`username: ${username}`);
     try {
-        const login_details = await utils.get_login_data(username);
+        const login = await Login.findOne({username});
+        if(!login) {
+            throw new Error("User not found");
+        }
         res.render("forgot_secret_question", {
             username,
-            secret_question: login_details["secret_question"],
+            secret_question: login["secret_question"],
         });
     } catch(err) {
         console.log(err);
@@ -82,14 +139,13 @@ app.post("/forgot", async (req, res) => {
     const {username, secret_answer} = req.body;
     console.log(`username: ${username}, secret_answer: ${secret_answer}`);
     try {
-        const login_details = await utils.get_login_data(username);
-        if (login_details["secret_answer"] === secret_answer) {
-            console.log(`Secret answer is correct, password is ${login_details["password"]}`);
-            res.redirect("/login");
-        } else {
-            console.log("Secret answer is incorrect");
-            res.redirect("/login");
+        const login = await Login.findOne({username, secret_answer});
+        if(!login) {
+            throw new Error("Secret answer is incorrect");
         }
+        console.log(`Secret answer is correct, password is ${login["password"]}`);
+        req.session.username = username;
+        res.redirect("/login");
     } catch(err) {
         console.log(err);
         res.redirect("/login");
@@ -99,7 +155,11 @@ app.post("/forgot", async (req, res) => {
 // show the dashboard
 app.get("/dashboard", async (req, res) => {
     try {
-        const student = await utils.get_student_data(req.session.iitb_roll_number);
+        const {iitb_roll_number} = req.session;
+        if(!iitb_roll_number) {
+            throw new Error("Not logged in");
+        }
+        const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
         console.log(student);
         res.render("dashboard", {
             pageTitle: "My Dashboard", 
@@ -112,9 +172,14 @@ app.get("/dashboard", async (req, res) => {
     }
 });
 
+// show the profile page
 app.get("/profile", async (req, res) => {
     try {
-        const student = await utils.get_student_data(req.session.iitb_roll_number);
+        const {iitb_roll_number} = req.session;
+        if(!iitb_roll_number) {
+            throw new Error("Not logged in");
+        }
+        const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
         console.log(student);
         res.render("dating", {
             pageTitle: "My Profile",
@@ -127,12 +192,57 @@ app.get("/profile", async (req, res) => {
     }
 });
 
+// handle the request to update the profile
 app.post("/match", (req, res) => {
     const {iitb_roll_number} = req.session;
     console.log(iitb_roll_number);
-    utils.update_student_data(iitb_roll_number, req.body);
-    res.send("Matching... Meanwhile, your profile has been updated.");
-})
+    Student.findOneAndUpdate({ "IITB Roll Number": iitb_roll_number }, req.body, {new: true, runValidators: true})
+        .then(student => {
+            console.log(`student updated: ${student}`);
+            res.redirect("/match");
+        })
+        .catch(err => {
+            console.log(err);
+        });
+});
+
+// show the match page
+app.get("/match", async (req, res) => {
+    try {
+        const {iitb_roll_number} = req.session;
+        if(!iitb_roll_number) {
+            throw new Error("Not logged in");
+        }
+        const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
+        const match_student = await script.find_perfect_match(student);
+        console.log(`Match found: ${match_student}`);
+        res.render("match", {
+            pageTitle: "It's a match!",
+            stylesheetLink: "",
+        });
+    } catch (error) {
+        console.log(error);
+        res.redirect("/login");
+    }
+});
+
+// show the scroll/swipe page
+app.get("/explore", async (req, res) => {
+    try {
+        const {iitb_roll_number} = req.session;
+        if(!iitb_roll_number) {
+            throw new Error("Not logged in");
+        }
+        console.log(iitb_roll_number);
+        res.render("scroll_or_swipe", {
+            pageTitle: "Explore",
+            stylesheetLink: "",
+        });
+    } catch (error) {
+        console.log(error);
+        res.redirect("/login");
+    }
+});
 
 // handle the request to logout
 app.post("/logout", (req, res) => {

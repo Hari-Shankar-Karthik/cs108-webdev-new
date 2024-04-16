@@ -2,6 +2,9 @@
 
 -> NOTE: Check authentication for every page. (Move it to utils)
 
+## NOTE:
+- Make a new terminal command nodemon -g index.js which shows all the console.log info that I'm currently showing. nodemon index.js will not show this stuff in its final form.
+
 ## Requirements: 
 
 1) **students.json**
