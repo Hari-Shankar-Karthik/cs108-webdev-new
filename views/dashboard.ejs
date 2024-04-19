@@ -1,8 +1,45 @@
 <%- include('partials/header.ejs') %>
 
-    <!-- Display the actual user's name -->
-    <div class="container my-3">
-        <h1>Heyy, <%= student["Name"] %>!</h1>
-    </div>
+        <!-- Welcome section -->
+        <div class="mx-3 my-5 row">
+            <div class="col-md-6 d-flex flex-column justify-content-center">
+                <h1>Heyy, <%= student["Name"] %>!</h1>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut, tempora nesciunt? Quia animi optio dolore veniam inventore porro ratione, impedit laudantium ipsam, reprehenderit iste quos aliquam! Quos pariatur ut dolorum.</p>
+            </div>
+            <!-- Hey, who doesn't like teddy bears? -->
+            <div class="col-md-6">
+                <img class="rounded-pill border img-fluid" src="https://images.unsplash.com/photo-1543886151-3bc2b944c718?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Stats section -->
+        <div class="mx-3 my-5 row justify-content-center">
+            <div class="col-md-6 border">
+                <h2 class="text-center display-3">My Stats</h2>
+                <div class="row">
+                    <div class="border text-center col d-flex flex-column">
+                        <p class="display-4">100 ❤</p>
+                        <p class="lead">Views</p>
+                    </div>
+                    <div class="border text-center col d-flex flex-column">
+                        <p class="display-4">100 👍</p>
+                        <p class="lead">Likes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Inbox section -->
+        <div class="mx-3 my-5 row justify-content-center">
+            <div class="col-md-6 border">
+                <h2 class="text-center display-3">My Inbox</h2>
+            </div>
+        </div>
+
+
 
 <%- include('partials/footer.ejs') %>

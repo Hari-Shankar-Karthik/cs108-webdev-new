@@ -37,6 +37,18 @@ const studentSchema = new mongoose.Schema({
         required: true,
         enum: ["Reading", "Cooking", "Coding", "Gardening", "Painting", "Watching Youtube/Instagram", "Playing musical instruments", "Photography"],
     },
+    "Photo": {
+        type: String,
+        required: true
+    },
+    "Views": {
+        type: Number,
+        default: 0
+    },
+    "Likes": {
+        type: [String],
+        default: [],
+    },
 });
 
 const Student = mongoose.model('Student', studentSchema);

@@ -1,0 +1,49 @@
+<%- include('partials/header.ejs') %>
+            <div class="mb-5 row justify-content-between">
+                <div class="my-3 col-md-4">
+                    <!-- Profile pic and name and year of study go here -->
+                    <img class="img-fluid img-thumbnail" src="<%= student["Photo"] %>" alt="">
+                    <div class="display-4 text-center"><%= student["Name"] %></div>
+                    <div class="lead text-center"><%= student["Year of Study"] %> year @ IIT Bombay</div>
+                </div>
+                <div class="my-3 col-md-6 d-flex flex-column justify-content-center">
+                    <h1 class="d-none d-md-block display-3 text-center">About</h1>
+                    <p class="lead">
+                        <!-- TODO: Change this -->
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe in deleniti commodi fugiat ullam nemo eaque eveniet, sint reprehenderit exercitationem ipsam ex quod omnis dolor molestiae placeat illum vel! Laudantium.
+                    </p>
+                    <!-- Like button -->
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-primary rounded-pill">Like &hearts;</button>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="mb-5 row justify-content-between">
+                <div class="my-3 col-md-4">
+                    <!-- Stats (views and likes) -->
+                    <h1 class="d-none d-md-block display-3 text-center">Stats<h1>
+                    <div class="row">
+                        <div class="col">
+                            <div class="display-4 text-center"><%= student["Views"] %></div>
+                            <div class="lead text-center">Views ❤</div>
+                        </div>
+                        <div class="col">
+                            <div class="display-4 text-center"><%= student["Likes"].length %></div>
+                            <div class="lead text-center">Likes 👍</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-3 col-md-6 d-flex flex-column justify-content-center">
+                    <h1 class="pulse d-md-block display-4 text-center">Wanna Connect?</h1>
+                    <div class="row justify-content-center">
+                        <div class="col-md-6 mb-3 d-flex justify-content-center">
+                            <a class="btn btn-primary flex-grow-1">QuickChat<sup>&trade;</sup></a>
+                        </div>
+                        <div class="col-md-6 mb-3 d-flex justify-content-center">
+                            <a class="btn btn-primary flex-grow-1">Email</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<%- include('partials/footer.ejs') %>

@@ -1,9 +1,15 @@
 # cs108-webdev-project
 
--> NOTE: Check authentication for every page. (Move it to utils)
-
 ## NOTE:
 - Make a new terminal command nodemon -g index.js which shows all the console.log info that I'm currently showing. nodemon index.js will not show this stuff in its final form.
+
+- Add a 'bio' section to each student's profile.
+
+- Add a likes and views statistic, and display it wherever.
+
+- Include data on branch (department) as well.
+
+- Change the matching alg. to damp down the chances of someone who has selected more boxes.
 
 ## Requirements: 
 

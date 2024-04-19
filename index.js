@@ -77,6 +77,15 @@ app.get("/", async (req, res) => {
     }
 });
 
+const present = (res, page_name, args) => {
+    for(const missing_arg of ["pageTitle", "stylesheetLink", "scriptLink"]) {
+        if(!args[missing_arg]) {
+            args[missing_arg] = "";
+        }
+    }
+    res.render(page_name, args);
+};
+
 // show the login page
 app.get("/login", (req, res) => {
     const {username} = req.session;
@@ -161,7 +170,7 @@ app.get("/dashboard", async (req, res) => {
         }
         const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
         console.log(student);
-        res.render("dashboard", {
+        present(res, "dashboard", {
             pageTitle: "My Dashboard", 
             stylesheetLink: "/css/dashboard_styles.css", 
             student,
@@ -181,7 +190,7 @@ app.get("/profile", async (req, res) => {
         }
         const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
         console.log(student);
-        res.render("dating", {
+        present(res, "dating", {
             pageTitle: "My Profile",
             stylesheetLink: "/css/style.css",
             student,
@@ -214,17 +223,34 @@ app.get("/match", async (req, res) => {
             throw new Error("Not logged in");
         }
         const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-        const match_student = await script.find_perfect_match(student);
-        console.log(`Match found: ${match_student}`);
-        res.render("match", {
+        const match = await script.find_perfect_match(student);
+        console.log(`Match found: ${match}`);
+        present(res, "match", {
             pageTitle: "It's a match!",
-            stylesheetLink: "",
+            scriptLink: "/js/like.js",
+            match,
         });
     } catch (error) {
         console.log(error);
         res.redirect("/login");
     }
 });
+
+const suitable_profiles = async looking_roll_no => {
+    const compatible_gender = gender1 => {
+        if(gender1 === "Male") {
+            return "Female";
+        }
+        if(gender1 === "Female") {
+            return "Male";
+        }
+        return "Other";
+    }
+
+    const looking_student = await Student.findOne({ "IITB Roll Number": looking_roll_no });
+    const suitable_gender = compatible_gender(looking_student["Gender"]);
+    return await Student.find({ "IITB Roll Number": { $ne: looking_roll_no }, "Gender": suitable_gender });
+}
 
 // show the scroll/swipe page
 app.get("/explore", async (req, res) => {
@@ -234,9 +260,78 @@ app.get("/explore", async (req, res) => {
             throw new Error("Not logged in");
         }
         console.log(iitb_roll_number);
-        res.render("scroll_or_swipe", {
+        const profiles = await suitable_profiles(iitb_roll_number)
+        present(res, "scroll_or_swipe", {
             pageTitle: "Explore",
-            stylesheetLink: "",
+            stylesheetLink: "/css/scroll_or_swipe_styles.css",
+            profiles,
+        });
+        // res.render("scroll_or_swipe_temp");
+    } catch (error) {
+        console.log(error);
+        res.redirect("/login");
+    }
+});
+
+// TODO: handle the request to like a profile
+// handle the request to like a profile
+// app.post('/like/:studentId', async (req, res) => {
+//     try {
+//         const studentId = req.params.studentId;
+        
+//         // Find the student by ID
+//         const student = await Student.findById(studentId);
+
+//         if (!student) {
+//             console.log("Student not found")
+//             return res.status(404).json({ error: 'Student not found' });
+//         }
+
+//         const likerRollNumber = req.session.iitb_roll_number;
+
+//         // Check if the liker's ID already exists in the likes array
+//         if (student["Likes"].includes(likerRollNumber)) {
+//             console.log("You have already liked this student");
+//             return res.status(400).json({ error: 'You have already liked this student' });
+//         }
+
+//         // Append the liker's ID to the likes array
+//         student["Likes"].push(likerRollNumber);
+//         await student.save();
+
+//         // Send a response indicating success
+//         console.log('Like added successfully');
+//         res.json({ message: 'Like added successfully' });
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// });
+  
+// show the profile of a specific student
+app.get("/profile/:student_id", async (req, res) => {
+    try {
+        const {iitb_roll_number} = req.session;
+        if(!iitb_roll_number) {
+            throw new Error("Not logged in");
+        }
+        const {student_id} = req.params;
+        const student = await Student.findById(student_id);
+        console.log(student);
+        // Incrementing the view count
+        // To prevent views from increasing my simply doing multiple refreshes, store the viewed students in the session
+        if(!req.session.viewed_students) {
+            req.session.viewed_students = [];
+        }
+        if(!req.session.viewed_students.includes(student_id)) {
+            req.session.viewed_students.push(student_id);
+            student["Views"] += 1;
+            await student.save();
+        }
+        present(res, "profile", {
+            pageTitle: `${student["Name"].split(" ")[0]}'s Profile`,
+            stylesheetLink: "/css/profile_styles.css",
+            student,
         });
     } catch (error) {
         console.log(error);
