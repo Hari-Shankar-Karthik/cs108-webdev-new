@@ -1,0 +1,32 @@
+// Define color variables for the romance and pastel theme
+$romance-pink: #FF6B6B; // Soft pink for romantic vibes
+$romance-red: #FF9F9F; // Warm red for passion
+$romance-purple: #B58FE7; // Muted purple for elegance
+
+$pastel-blue: #AED9E0; // Soft blue for a calming effect
+$pastel-green: #B8E6B8; // Subtle green for freshness
+$pastel-yellow: #FFE194; // Pale yellow for warmth
+
+// Apply the color palette to specific elements or components
+$primary: $romance-pink; // Use soft pink as the primary color
+$secondary: $romance-red; // Use warm red as the secondary color
+
+// Override Bootstrap variables with the custom color scheme
+$theme-colors: (
+    "primary": $primary,
+    "secondary": $secondary,
+    "success": $pastel-green,
+    "info": $pastel-blue,
+    "warning": $pastel-yellow,
+    "danger": $romance-red,
+    "light": $pastel-green,
+    "dark": $romance-purple
+);
+
+// include Bootstrap
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+body {
+    background-color: $pastel-blue;
+    color: #333333; // Dark gray for better text readability
+}
