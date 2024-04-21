@@ -1,49 +1,74 @@
 <%- include('partials/header.ejs') %>
-            <div class="mb-5 row justify-content-between">
-                <div class="my-3 col-md-4">
-                    <!-- Profile pic and name and year of study go here -->
-                    <img class="img-fluid img-thumbnail" src="<%= student["Photo"] %>" alt="">
-                    <div class="display-4 text-center"><%= student["Name"] %></div>
-                    <div class="lead text-center"><%= student["Year of Study"] %> year @ IIT Bombay</div>
-                </div>
-                <div class="my-3 col-md-6 d-flex flex-column justify-content-center">
+    
+    <main class="container">
+        <div class="mb-5 row justify-content-between">
+            <div class="my-5 col-md-4">
+                <!-- Profile pic and name and year of study go here -->
+                <img class="img-fluid rounded-pill img-thumbnail" src="<%= student["Photo"] %>" alt="">
+                <div class="display-4 text-center"><%= student["Name"] %></div>
+                <div class="lead text-center"><%= student["Year of Study"] %> year @ IIT Bombay</div>
+            </div>
+            <div class="my-3 col-md-6 d-flex flex-column justify-content-center">
+                <div class="display-box">
                     <h1 class="d-none d-md-block display-3 text-center">About</h1>
-                    <p class="lead">
-                        <!-- TODO: Change this -->
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe in deleniti commodi fugiat ullam nemo eaque eveniet, sint reprehenderit exercitationem ipsam ex quod omnis dolor molestiae placeat illum vel! Laudantium.
+                    <p class="lead text-center">
+                        <%
+                            function formatArray(arr) {
+                            if (arr.length === 0) {
+                                return '';
+                            } else if (arr.length === 1) {
+                                return arr[0];
+                            } else if (arr.length === 2) {
+                                return arr.join(' and ');
+                            } else {
+                                const lastElement = arr.pop();
+                                return arr.join(', ') + ', and ' + lastElement;
+                            }
+                            }
+                        %>
+
+                        Hi, I'm <%= student["Name"].split(" ")[0] %>. I'm a <%= student["Year of Study"] %> year student at IIT Bombay. I'm interested in <b><%= formatArray(student["Interests"]) %></b>. I love <b><%= formatArray(student["Hobbies"]) %></b>.
                     </p>
                     <!-- Like button -->
                     <div class="d-flex justify-content-center">
-                        <button type="button" class="btn btn-primary rounded-pill">Like &hearts;</button>
+                        <button id="like-button" type="button" class="btn btn-primary rounded-pill">Like &hearts;</button>
+                        <!-- So that Roll number is accessible inside the script -->
+                        <div id="liker-roll-number" class="d-none"><%= iitb_roll_number %></div>
+                        <div id="liked-id" class="d-none"><%= student["_id"] %></div>
+                        <div id="can-like" class="d-none"><%= canLike %></div>
                     </div>
                 </div>
             </div>
-            <hr>
-            <div class="mb-5 row justify-content-between">
-                <div class="my-3 col-md-4">
-                    <!-- Stats (views and likes) -->
-                    <h1 class="d-none d-md-block display-3 text-center">Stats<h1>
-                    <div class="row">
-                        <div class="col">
-                            <div class="display-4 text-center"><%= student["Views"] %></div>
-                            <div class="lead text-center">Views ❤</div>
-                        </div>
-                        <div class="col">
-                            <div class="display-4 text-center"><%= student["Likes"].length %></div>
-                            <div class="lead text-center">Likes 👍</div>
-                        </div>
+        </div>
+        <hr>
+        <div class="mb-5 row justify-content-between">
+            <div class="display-box m-3 col-md-4">
+                <!-- Stats (views and likes) -->
+                <h1 class="display-3 text-center">Stats<h1>
+                <hr class="horizontal-line">
+                <div class="row">
+                    <div class="col border-end">
+                        <div class="display-4 text-center"><%= student["Views"] %></div>
+                        <div class="lead text-center">Views 👁</div>
+                    </div>
+                    <div class="col">
+                        <div class="display-4 text-center"><%= student["Likes"].length %></div>
+                        <div class="lead text-center">Likes ❤</div>
                     </div>
                 </div>
-                <div class="my-3 col-md-6 d-flex flex-column justify-content-center">
-                    <h1 class="pulse d-md-block display-4 text-center">Wanna Connect?</h1>
-                    <div class="row justify-content-center">
-                        <div class="col-md-6 mb-3 d-flex justify-content-center">
-                            <a class="btn btn-primary flex-grow-1">QuickChat<sup>&trade;</sup></a>
-                        </div>
-                        <div class="col-md-6 mb-3 d-flex justify-content-center">
-                            <a class="btn btn-primary flex-grow-1">Email</a>
-                        </div>
+            </div>              
+            <div class="my-3 col-md-6 d-flex flex-column justify-content-center">
+                <h1 class="pulse d-md-block display-4 text-center">Wanna Connect? 😏</h1>
+                <div class="row justify-content-center">
+                    <div class="col-md-6 mb-3 d-flex justify-content-center">
+                        <a class="btn btn-primary flex-grow-1">QuickChat<sup>&trade;</sup></a>
+                    </div>
+                    <div class="col-md-6 mb-3 d-flex justify-content-center">
+                        <a class="btn btn-primary flex-grow-1">Email</a>
                     </div>
                 </div>
             </div>
+        </div>
+    </main>
+
 <%- include('partials/footer.ejs') %>

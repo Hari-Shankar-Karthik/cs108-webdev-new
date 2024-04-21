@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const fs = require("fs").promises; // importing the async version of fs
 const Student = require("./models/student");
 const Login = require("./models/login");
+const bodyParser = require("body-parser");
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/kavya-is-god')
@@ -49,6 +50,9 @@ app.use(express.static(path.join(__dirname, "/public")));
 // middleware to parse the request body
 app.use(express.urlencoded({extended: true}));
 
+// middleware to parse JSON bodies
+app.use(express.json());
+
 // configure expression session middleware
 app.use(
     session({
@@ -88,14 +92,14 @@ const present = (res, page_name, args) => {
 
 // show the login page
 app.get("/login", (req, res) => {
-    const {username} = req.session;
-    console.log(`pre-filled username: ${username}`)
+    const {username, error, message} = req.session;
+    console.log(`pre-filled username: ${username}, error = ${error}, message = ${message}`)
     req.session.destroy(err => {
         if (err) {
             console.log(err);
         }
     });
-    res.render("login", {username});
+    res.render("login", {username, error, message});
 });
 
 // handling request to login
@@ -115,6 +119,7 @@ app.post("/login", async (req, res) => {
         })
         .catch(err => {
             console.log(err);
+            req.session.error = "Invalid credentials";
             res.redirect("/login");
         });
 });
@@ -138,6 +143,7 @@ app.post("/secret-question", async (req, res) => {
             secret_question: login["secret_question"],
         });
     } catch(err) {
+        req.session.error = "User not found";
         console.log(err);
         res.redirect("/login");
     }
@@ -154,9 +160,11 @@ app.post("/forgot", async (req, res) => {
         }
         console.log(`Secret answer is correct, password is ${login["password"]}`);
         req.session.username = username;
+        req.session.message = `Your password is ${login["password"]}.`;
         res.redirect("/login");
     } catch(err) {
         console.log(err);
+        req.session.error = "Secret answer is incorrect";
         res.redirect("/login");
     }
 });
@@ -192,7 +200,6 @@ app.get("/profile", async (req, res) => {
         console.log(student);
         present(res, "dating", {
             pageTitle: "My Profile",
-            stylesheetLink: "/css/style.css",
             student,
         });
     } catch (error) {
@@ -223,12 +230,23 @@ app.get("/match", async (req, res) => {
             throw new Error("Not logged in");
         }
         const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-        const match = await script.find_perfect_match(student);
+        const match_id = await script.find_perfect_match(student);
+        if(!match_id) {
+            present(res, "no_match", {
+                pageTitle: "No match found",
+                student,
+            });
+            return;
+        }
+        const match = await Student.findById(match_id);
+        const canLike = !match["Likes"].includes(iitb_roll_number);
         console.log(`Match found: ${match}`);
         present(res, "match", {
             pageTitle: "It's a match!",
             scriptLink: "/js/like.js",
+            student,
             match,
+            canLike,
         });
     } catch (error) {
         console.log(error);
@@ -273,40 +291,29 @@ app.get("/explore", async (req, res) => {
     }
 });
 
-// TODO: handle the request to like a profile
-// handle the request to like a profile
-// app.post('/like/:studentId', async (req, res) => {
-//     try {
-//         const studentId = req.params.studentId;
-        
-//         // Find the student by ID
-//         const student = await Student.findById(studentId);
-
-//         if (!student) {
-//             console.log("Student not found")
-//             return res.status(404).json({ error: 'Student not found' });
-//         }
-
-//         const likerRollNumber = req.session.iitb_roll_number;
-
-//         // Check if the liker's ID already exists in the likes array
-//         if (student["Likes"].includes(likerRollNumber)) {
-//             console.log("You have already liked this student");
-//             return res.status(400).json({ error: 'You have already liked this student' });
-//         }
-
-//         // Append the liker's ID to the likes array
-//         student["Likes"].push(likerRollNumber);
-//         await student.save();
-
-//         // Send a response indicating success
-//         console.log('Like added successfully');
-//         res.json({ message: 'Like added successfully' });
-//     } catch (err) {
-//         console.log(err);
-//         res.status(500).json({ error: 'Internal server error' });
-//     }
-// });
+// Define a route for liking a profile
+app.post('/hitLike', async (req, res) => {
+    try {
+        const {iitb_roll_number} = req.session;
+        const { likerRollNo, likedID } = req.body;
+        console.log(`Liker Roll No: ${likerRollNo}, Liked ID: ${likedID}, Session Roll No: ${iitb_roll_number}`)
+        if(!likerRollNo || !likedID || likerRollNo !== iitb_roll_number) {
+            throw new Error('Invalid request');
+        }
+        // check if the liker has already liked the liked
+        const liker = await Student.findOne({ "IITB Roll Number": likerRollNo });
+        if(liker["Likes"].includes(likedID)) {
+            throw new Error('Already liked');
+        }
+        const updatedRecord = await Student.findByIdAndUpdate(likedID, { $push: { "Likes": likerRollNo } }, { new: true, runValidators: true });
+        console.log(updatedRecord);
+        // Update the record using Mongoose
+        res.json(updatedRecord);
+    } catch (error) {
+        console.error('Error updating record:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
   
 // show the profile of a specific student
 app.get("/profile/:student_id", async (req, res) => {
@@ -317,6 +324,7 @@ app.get("/profile/:student_id", async (req, res) => {
         }
         const {student_id} = req.params;
         const student = await Student.findById(student_id);
+        const canLike = !student["Likes"].includes(iitb_roll_number);
         console.log(student);
         // Incrementing the view count
         // To prevent views from increasing my simply doing multiple refreshes, store the viewed students in the session
@@ -331,7 +339,10 @@ app.get("/profile/:student_id", async (req, res) => {
         present(res, "profile", {
             pageTitle: `${student["Name"].split(" ")[0]}'s Profile`,
             stylesheetLink: "/css/profile_styles.css",
+            scriptLink: "/js/like.js",
+            iitb_roll_number,
             student,
+            canLike,
         });
     } catch (error) {
         console.log(error);

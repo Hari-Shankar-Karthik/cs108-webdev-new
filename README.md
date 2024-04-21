@@ -3,6 +3,10 @@
 ## NOTE:
 - Make a new terminal command nodemon -g index.js which shows all the console.log info that I'm currently showing. nodemon index.js will not show this stuff in its final form.
 
+- Add body-parser to the latex report.
+
+- ESSENTIAL: signup, error 404, quickchat, email chat
+
 - Add a 'bio' section to each student's profile.
 
 - Add a likes and views statistic, and display it wherever.
@@ -10,6 +14,12 @@
 - Include data on branch (department) as well.
 
 - Change the matching alg. to damp down the chances of someone who has selected more boxes.
+
+- Make a page to show 'No match'.
+
+- Make an Error 404 page.
+
+-subscription increases chance of match.
 
 ## Requirements: 
 

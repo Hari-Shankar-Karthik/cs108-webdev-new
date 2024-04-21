@@ -13,4 +13,15 @@
         color: red;
     }
 }
-  
+
+.horizontal-line {
+    border-top: 1px solid black;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.vertical-line {
+    border-left: 1px solid black;
+    height: 100%;
+    margin: 0 auto;
+}

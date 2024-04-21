@@ -1,27 +1,37 @@
-console.log("connected");
+// The Like Button
+// When the like button is pressed, this user is added to the list of users who have liked this particular profile.
+// The like button is disabled for those who have already liked the profile.
+// There is no feature (at present) to unlike a profile.
 
-// TODO: Fix the sending of the POST request to increment the like count
+console.log("like.js loaded");
+const likeButton = document.querySelector('#like-button');
 
-// const like_button = document.querySelector("#like_button");
+// If the user has already liked the profile, disable the like button
+const canLike = document.querySelector("#can-like").textContent;
+if (canLike === "false") {
+    likeButton.textContent = "Liked";
+    likeButton.disabled = true;
+}
 
-// like_button.addEventListener('click', async () => {
-//     const studentId = document.querySelector("#student_id").value;
-//     try {
-//         const response = await fetch(`/like/${studentId}`, {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify({}),
-//         });
-//         if (response.ok) {
-//             // Disable the like button after successfully incrementing the like count
-//             like_button.disabled = true;
-//         } else {
-//             console.error('Failed to increment like count:', response.statusText);
-//         }
-//     } catch (error) {
-//         console.error('Error incrementing like count:', error);
-//     }
-// });
+likeButton.addEventListener("click", () => {
+    console.log("Like button clicked")
+    const likerRollNo = document.querySelector("#liker-roll-number").textContent;
+    const likedID = document.querySelector("#liked-id").textContent;
+    console.log(`Liker Roll No: ${likerRollNo}, Liked ID: ${likedID}`);
+    fetch('/hitLike', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ likerRollNo, likedID })
+    })
+    .then(response => {
+        likeButton.textContent = "Liked";
+        likeButton.disabled = true;
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });  
+})
   

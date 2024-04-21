@@ -1,14 +1,18 @@
 <%- include('partials/header.ejs') %>
-
+    
+    <main class="container">
         <!-- Welcome section -->
         <div class="mx-3 my-5 row">
-            <div class="col-md-6 d-flex flex-column justify-content-center">
-                <h1>Heyy, <%= student["Name"] %>!</h1>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut, tempora nesciunt? Quia animi optio dolore veniam inventore porro ratione, impedit laudantium ipsam, reprehenderit iste quos aliquam! Quos pariatur ut dolorum.</p>
+            <div class="col-lg-6 d-flex flex-column justify-content-center">
+                <h1 class="text-center display-2">Heyy, <%= student["Name"].split(" ")[0] %>!</h1>
+                <% one_liners = [ "Ready to dance through the digital cosmos and find your perfect harmony?", "Welcome to the playground of possibilities - let's swing into love!", "Get ready to paint the digital town red with romance and laughter.", "Embark on a digital adventure where love knows no bounds.", "Sprinkle some digital stardust and watch love bloom in pixels.", "Dive into the digital ocean - where every wave carries a chance at love.", "Navigate the digital maze of love and uncover hidden treasures.", "Ignite sparks in the digital sky and create a constellation of love.", "Welcome to the digital realm of romance - where every click is a step closer to love.", "Embark on a digital voyage filled with laughter, love, and endless possibilities." ] %>
+                <p class="text-center lead"><%= one_liners[Math.floor(Math.random() * one_liners.length)] %></p>
             </div>
             <!-- Hey, who doesn't like teddy bears? -->
-            <div class="col-md-6">
-                <img class="rounded-pill border img-fluid" src="https://images.unsplash.com/photo-1543886151-3bc2b944c718?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+            <div class="row col-lg-6 justify-content-center">
+                <div class="col-10 col-md-6 col-lg-12">
+                    <img class="rounded-pill img-fluid" src="https://images.unsplash.com/photo-1543886151-3bc2b944c718?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+                </div>
             </div>
         </div>
 
@@ -16,16 +20,17 @@
 
         <!-- Stats section -->
         <div class="mx-3 my-5 row justify-content-center">
-            <div class="col-md-6 border">
+            <div class="col-md-6 bg-white img-thumbnail">
                 <h2 class="text-center display-3">My Stats</h2>
+                <hr>
                 <div class="row">
-                    <div class="border text-center col d-flex flex-column">
-                        <p class="display-4">100 ❤</p>
-                        <p class="lead">Views</p>
+                    <div class="text-center col-sm-6 d-flex flex-column">
+                        <p class="display-4"><%= student["Views"] %></p>
+                        <p class="lead">Views 👁</p>
                     </div>
-                    <div class="border text-center col d-flex flex-column">
-                        <p class="display-4">100 👍</p>
-                        <p class="lead">Likes</p>
+                    <div class="text-center col-sm-6 d-flex flex-column">
+                        <p class="display-4"><%= student["Likes"].length %></p>
+                        <p class="lead">Likes ❤</p>
                     </div>
                 </div>
             </div>
@@ -39,7 +44,6 @@
                 <h2 class="text-center display-3">My Inbox</h2>
             </div>
         </div>
-
-
+    </main>
 
 <%- include('partials/footer.ejs') %>

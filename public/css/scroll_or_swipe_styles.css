@@ -1,0 +1,14 @@
+.link-style {
+    text-decoration: none; /* Remove default underline */
+    color: inherit; /* Use the same color as surrounding text */
+}
+
+.link-style:hover {
+    text-decoration: underline; /* Add underline on hover for indication */
+}
+
+/* @media (min-width: 576px) {
+    .profile-card {
+        width: 576px;
+    }
+} */

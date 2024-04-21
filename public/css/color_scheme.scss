@@ -7,6 +7,8 @@ $pastel-blue: #AED9E0; // Soft blue for a calming effect
 $pastel-green: #B8E6B8; // Subtle green for freshness
 $pastel-yellow: #FFE194; // Pale yellow for warmth
 
+$light-background: #E6E6E6; // Light beige for a soft and warm background
+
 // Apply the color palette to specific elements or components
 $primary: $romance-pink; // Use soft pink as the primary color
 $secondary: $romance-red; // Use warm red as the secondary color
@@ -27,6 +29,7 @@ $theme-colors: (
 @import "../../node_modules/bootstrap/scss/bootstrap";
 
 body {
-    background-color: $pastel-blue;
+    background-color: $light-background;
+    // font-family: Rubik;
     color: #333333; // Dark gray for better text readability
 }

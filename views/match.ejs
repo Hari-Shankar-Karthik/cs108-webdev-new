@@ -1,41 +1,84 @@
 <%- include('partials/header.ejs') %>
+    
+    <main class="container">
+        <div class="container">
+            <!-- TODO: Add confetti falling (similar to how Google does it) -->
+            <h1 class="display-3 my-3" >Your match is... <span class="d-none d-sm-inline-block">🤞🤞</span></h1>
+            <div class="display-box row my-3">
+                <div class="col-lg-6">
+                    <div class="d-flex flex-column justify-content-center">
+                        <!-- NOTE: Insert Image URL here -->
+                        <img class="rounded-top img-fluid" src="<%= match["Photo"] %>" alt="">
+                        <button id="like-button" type="button" class="btn btn-primary rounded-bottom">Like &hearts;</button>
+                        <div class="d-none" id="liker-roll-number"><%= student["IITB Roll Number"] %></div>
+                        <div class="d-none" id="liked-id"><%= match["_id"] %></div>
+                        <div class="d-none" id="can-like"><%= canLike %></div>
+                    </div>
+                    <!-- TODO: Implement like button logic -->
+                </div>
+                <div class="col-lg-6 d-flex flex-column justify-content-between">
+                    <!-- NOTE: Insert generated description para here -->
+                    <!-- TODO: Attempt dynamic updation of font size based on screen width -->
+                    <h2 class="display-4 text-center"><%= match["Name"] %> </h2>
+                    <p class="lead text-center">
+                        <!-- TODO: Change this -->
+                        <!-- Insert 🤞 -->
+                        <!-- <a href="#" data-toggle="popover" title="Wikipedia" data-content="Content goes here">Hover over me</a> -->
+                        Congratulations on matching with <%= match["Name"].split(" ")[0] %>!!!
+                        <span class="d-none d-lg-inline-block">May your connection blossom into something extraordinary as you embark on this journey together.</span>
+                        <a href="" data-bs-toggle="modal" data-bs-target="#commonsModal">Find out what you have in common.</a>
 
-    <div class="container">
-        <!-- TODO: Add confetti falling (similar to how Google does it) -->
-        <h1 class="display-3 mb-3" >Your match is...</h1>
-        <div class="row mb-5">
-            <div class="col-lg-6">
-                <div class="d-flex flex-column justify-content-center">
-                    <!-- NOTE: Insert Image URL here -->
-                    <img class="rounded-top img-fluid" src="<%= match["Photo"] %>" alt="">
-                    <button id="like_button" type="button" class="btn btn-primary rounded-bottom">Like &hearts;</button>
+                        <!-- Modal -->
+                        <div class="modal fade" id="commonsModal" tabindex="-1" aria-labelledby="commonsModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="commonsModalLabel">Commonalities</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+                                            <% const commonInterests = student["Interests"].filter(interest => match["Interests"].includes(interest)); %>
+                                            <% const commonHobbies = student["Hobbies"].filter(hobby => match["Hobbies"].includes(hobby)); %>
+                                            <% if (commonInterests.length > 0) { %>
+                                                <% if (commonInterests.length == 1) { %>
+                                                    You both listed <b><%= commonInterests[0] %></b> as a common interest.
+                                                <% } else { %>
+                                                    Common interests include <b><%= commonInterests.slice(0, -1).join(", ") %></b> and <b><%= commonInterests[commonInterests.length - 1] %></b>.
+                                                <% } %>
+                                            <% } %>
+                                            <% if (commonHobbies.length > 0) { %>
+                                                <% if(commonHobbies.length == 1) { %>
+                                                    You both listed <b><%= commonHobbies[0] %></b> as a common hobby.</p>
+                                                <% } else { %>
+                                                    Common hobbies include <b><%= commonHobbies.slice(0, -1).join(", ") %></b> and <b><%= commonHobbies[commonHobbies.length - 1] %></b>.
+                                                <% } %>
+                                            <% } %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6 mb-3 d-flex justify-content-center">
+                            <a class="btn btn-primary flex-grow-1" href="/profile/<%= match["_id"] %>">View Profile</a>
+                        </div>
+                        <!-- TODO: Make these feautures -->
+                        <div class="col-md-6 mb-3 d-flex justify-content-center">
+                            <a class="btn btn-primary flex-grow-1">Send a QuickChat<sup>&trade;</sup></a>
+                        </div>
+                        <div class="col-md-6 mb-3 d-flex justify-content-center">
+                            <a class="btn btn-primary flex-grow-1">Connect via Email</a>
+                        </div>
+                        <div class="col-md-6 mb-3 d-flex justify-content-center">
+                            <a class="btn btn-secondary flex-grow-1" href="/explore">View More Profiles</a>
+                        </div>
+                    </div>
                 </div>
-                <!-- TODO: Implement like button logic -->
             </div>
-            <div class="col-lg-6 d-flex flex-column justify-content-between">
-                <!-- NOTE: Insert generated description para here -->
-                <!-- TODO: Attempt dynamic updation of font size based on screen width -->
-                <h2 class="display-4 text-center"><%= match["Name"] %></h2>
-                <p class="d-none d-md-block lead text-center">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe in deleniti commodi fugiat ullam nemo eaque eveniet, sint reprehenderit exercitationem ipsam ex quod omnis dolor molestiae placeat illum vel! Laudantium.
-                </p>
-                <div class="row">
-                    <div class="col-md-6 mb-3 d-flex justify-content-center">
-                        <a class="btn btn-primary flex-grow-1" href="/profile/<%= match["_id"] %>">View Profile</a>
-                    </div>
-                    <div class="col-md-6 mb-3 d-flex justify-content-center">
-                        <a class="btn btn-primary flex-grow-1">Send a QuickChat<sup>&trade;</sup></a>
-                    </div>
-                    <div class="col-md-6 mb-3 d-flex justify-content-center">
-                        <a class="btn btn-primary flex-grow-1">Connect via Email</a>
-                    </div>
-                    <div class="col-md-6 mb-3 d-flex justify-content-center">
-                        <a class="btn btn-secondary flex-grow-1" href="/explore">View More Profiles</a>
-                    </div>
-                </div>
-            </div>
+            <div id="student_id" class="d-none"><%= match["_id"] %></div>
         </div>
-        <div id="student_id" class="d-none"><%= match["_id"] %></div>
-    </div>
+    </main>
 
 <%- include('partials/footer.ejs') %>

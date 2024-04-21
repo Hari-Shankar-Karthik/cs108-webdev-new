@@ -50,5 +50,8 @@ module.exports.find_perfect_match = async looking_student => {
         }
     }
 
-    return matching_student;
+    if(matching_student === null) {
+        return null;
+    }
+    return matching_student["_id"];
 }

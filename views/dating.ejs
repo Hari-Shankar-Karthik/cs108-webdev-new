@@ -1,52 +1,74 @@
 <%- include('partials/header.ejs') %>
 
-    <div class="container my-3">
-        <form action="/match" method="post">
-            <legend>Let's Get to Know You</legend>
-            <!-- IITB Roll Number  -->
-            <label class="form-label" for="iitb_roll_number">IITB Roll Number</label>
-            <input class="form-control" type="text" name="IITB Roll Number" id="iitb_roll_number" disabled value="<%= student["IITB Roll Number"] %>">
-            <!-- Name -->
-            <label class="form-label" for="name">Name</label>
-            <input class="form-control" type="text" name="Name" id="name" value="<%= student["Name"] %>">
-            <!-- Year of Study -->
-            <label class="form-label" for="year_of_study">Year of Study</label>
-            <input class="form-control" type="text" name="Year of Study" id="year_of_study" value="<%= student["Year of Study"] %>">
-            <!-- Age -->
-            <label class="form-label" for="age">Age</label>
-            <input class="form-control" type="number" name="Age" id="age" value="<%= student["Age"] %>">
-            <!-- Gender -->
-            <label class="form-label" for="gender">Gender</label>
-            <% all_genders = ["Male", "Female", "Other"] %>
-            <% for(let i = 0; i < all_genders.length; i++) { %>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="Gender" id="gender_<%= i %>" value="<%= all_genders[i] %>" <%= student["Gender"] === all_genders[i] ? "checked" : "" %>>
-                    <label class="form-check-label" for="gender_<%= i %>"><%= all_genders[i] %></label>
+    <main class="container">
+        <div class="container mt-5 display-box">
+            <form action="/match" method="post">
+                <legend>Let's Get to Know You</legend>
+                <div class="row mb-3">
+                    <div class="col-md-4 col-lg-2">
+                        <!-- IITB Roll Number  -->
+                        <label class="form-label" for="iitb_roll_number">IITB Roll Number</label>
+                        <input class="form-control" type="text" name="IITB Roll Number" id="iitb_roll_number" disabled value="<%= student["IITB Roll Number"] %>">
+                    </div>
+                    <div class="row col-md-8 col-lg-10">
+                        <div class="col-md-6">
+                            <!-- Name -->
+                            <label class="form-label" for="name">Name</label>
+                            <input class="form-control" type="text" name="Name" id="name" value="<%= student["Name"] %>">
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Email -->
+                            <label class="form-label" for="email">Email</label>
+                            <input class="form-control" type="email" name="Email" id="email" value="<%= student["Email"] %>">        
+                        </div>
+                    </div>
                 </div>
-            <% } %>
-            <!-- Email -->
-            <label class="form-label" for="email">Email</label>
-            <input class="form-control" type="email" name="Email" id="email" value="<%= student["Email"] %>">
-            <!-- Interests -->
-            <% all_interests = ["Traveling", "Sports", "Movies", "Music", "Literature", "Technology", "Fashion", "Art"] %>
-            <label class="form-label" for="interests">Interests</label>
-            <% for(let i = 0; i < all_interests.length; i++) { %>
-                <div class="form-check">
-                    <input class="form-check-input" name="Interests" type="checkbox" value="<%= all_interests[i] %>" id="interest_<%= i %>" <%= student["Interests"].includes(all_interests[i]) ? "checked" : "" %>>
-                    <label class="form-check-label" for="interest_<%= i %>"><%= all_interests[i] %></label>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <!-- Year of Study -->
+                        <label class="form-label" for="year_of_study">Year of Study</label>
+                        <input class="form-control" type="text" name="Year of Study" id="year_of_study" value="<%= student["Year of Study"] %>">
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Age -->
+                        <label class="form-label" for="age">Age</label>
+                        <input class="form-control" type="number" name="Age" id="age" value="<%= student["Age"] %>">
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Gender -->
+                        <label class="form-label text-center" for="gender">Gender</label>
+                        <select class="form-select" name="gender">
+                            <% for(const gender of ["Male", "Female", "Other"]) { %>
+                                <option value="<%= gender %>" <%= student["Gender"] === gender ? "selected" : "" %>><%= gender %></option>
+                            <% } %>
+                        </select>
+                    </div>
                 </div>
-            <% } %>
-            <!-- Hobbies -->
-            <% all_hobbies = ["Reading", "Cooking", "Coding", "Gardening", "Painting", "Watching Youtube/Instagram", "Playing musical instruments", "Photography"] %>
-            <label class="form-label" for="hobbies">Hobbies</label>
-            <% for(let i = 0; i < all_hobbies.length; i++) { %>
-                <div class="form-check">
-                    <input class="form-check-input" name="Hobbies" type="checkbox" value="<%= all_hobbies[i] %>" id="hobbies_<%= i %>" <%= student["Hobbies"].includes(all_hobbies[i]) ? "checked" : "" %>>
-                    <label class="form-check-label" for="hobbies_<%= i %>"><%= all_hobbies[i] %></label>
+                <!-- Interests -->
+                <% all_interests = ["Traveling", "Sports", "Movies", "Music", "Literature", "Technology", "Fashion", "Art"] %>
+                <label class="form-label" for="interests">Interests</label>
+                <div class="mb-3 row">
+                    <% for(let i = 0; i < all_interests.length; i++) { %>
+                        <div class="col-md-3 form-check">
+                            <input class="form-check-input" name="Interests" type="checkbox" value="<%= all_interests[i] %>" id="interest_<%= i %>" <%= student["Interests"].includes(all_interests[i]) ? "checked" : "" %>>
+                            <label class="form-check-label" for="interest_<%= i %>"><%= all_interests[i] %></label>
+                        </div>
+                    <% } %>
                 </div>
-            <% } %>
-            <button class="btn btn-primary">Find Match!</button>
-        </form>
-    </div>
+                <!-- Hobbies -->
+                <% all_hobbies = ["Reading", "Cooking", "Coding", "Gardening", "Painting", "Watching Youtube/Instagram", "Playing musical instruments", "Photography"] %>
+                <label class="form-label" for="hobbies">Hobbies</label>
+                <div class="mb-3 row">
+                    <% for(let i = 0; i < all_hobbies.length; i++) { %>
+                        <div class="col-md-3 form-check">
+                            <input class="form-check-input" name="Hobbies" type="checkbox" value="<%= all_hobbies[i] %>" id="hobbies_<%= i %>" <%= student["Hobbies"].includes(all_hobbies[i]) ? "checked" : "" %>>
+                            <label class="form-check-label" for="hobbies_<%= i %>"><%= all_hobbies[i] %></label>
+                        </div>
+                    <% } %>
+                </div>
+                <button class="btn btn-primary">Find Match!</button>
+            </form>
+        </div>
+    </main>
 
 <%- include('partials/footer.ejs') %>
