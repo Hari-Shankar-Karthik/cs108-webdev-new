@@ -7,8 +7,6 @@
     text-decoration: underline; /* Add underline on hover for indication */
 }
 
-/* @media (min-width: 576px) {
-    .profile-card {
-        width: 576px;
-    }
-} */
+.fixed-height {
+    height: 80vh;
+}
