@@ -20,3 +20,19 @@ body {
     margin-top: auto;
     width: 100%;
 }
+
+.pulse {
+    animation: pulseAnimation 2.5s infinite;
+}
+  
+@keyframes pulseAnimation {
+    0% {
+        color: red;
+    }
+    50% {
+        color: black;
+    }
+    100% {
+        color: red;
+    }
+}

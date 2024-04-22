@@ -10,7 +10,7 @@ const Login = require("./models/login");
 const bodyParser = require("body-parser");
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/kavya-is-god')
+mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
     .then(async () => {
         console.log('MongoDB connected');
         try {
@@ -185,6 +185,7 @@ app.get("/dashboard", async (req, res) => {
         });
     } catch (error) {
         console.log(error);
+        req.session.error = "Not logged in";
         res.redirect("/login");
     }
 });
@@ -204,6 +205,7 @@ app.get("/profile", async (req, res) => {
         });
     } catch (error) {
         console.log(error);
+        req.session.error = "Not logged in";
         res.redirect("/login");
     }
 });
@@ -250,6 +252,7 @@ app.get("/match", async (req, res) => {
         });
     } catch (error) {
         console.log(error);
+        req.session.error = "Not logged in";
         res.redirect("/login");
     }
 });
@@ -287,6 +290,7 @@ app.get("/explore", async (req, res) => {
         // res.render("scroll_or_swipe_temp");
     } catch (error) {
         console.log(error);
+        req.session.error = "Not logged in";
         res.redirect("/login");
     }
 });
@@ -346,6 +350,7 @@ app.get("/profile/:student_id", async (req, res) => {
         });
     } catch (error) {
         console.log(error);
+    req.session.error = "Not logged in";
         res.redirect("/login");
     }
 });
@@ -360,5 +365,12 @@ app.post("/logout", (req, res) => {
             console.log("Logged out successfully.");
             res.redirect("/login");
         }
+    });
+});
+
+// handle any other request
+app.get("*", (req, res) => {
+    present(res, "error404", {
+        pageTitle: "Error 404",
     });
 });
