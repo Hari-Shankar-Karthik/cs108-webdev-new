@@ -7,6 +7,10 @@
 
 - ESSENTIAL: signup, error 404, quickchat, email chat
 
+- Only allowed one 'find match' per session.
+
+- Subscription increases the chance of match.
+
 - Add a 'bio' section to each student's profile.
 
 - Add a likes and views statistic, and display it wherever.
@@ -19,7 +23,6 @@
 
 - Make an Error 404 page.
 
--subscription increases chance of match.
 
 ## Requirements: 
 

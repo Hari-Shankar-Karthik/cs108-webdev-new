@@ -1,13 +1,21 @@
 const express = require("express");
 const app = express();
+const session = require("express-session"); // for session management
 const path = require("path");
-const script = require("./script");
-const session = require("express-session");
-const mongoose = require("mongoose");
 const fs = require("fs").promises; // importing the async version of fs
+const mongoose = require("mongoose"); // for storing data in MongoDB
+
+const script = require("./script"); // contains the matching algorithm
+
+// Import the models
 const Student = require("./models/student");
 const Login = require("./models/login");
-const bodyParser = require("body-parser");
+
+// Import the custom error handlers
+const AuthenticationError = require("./errors/AuthenticationError");
+const IncompleteDataError = require("./errors/IncompleteDataError");
+const wrapAsyncHandler = require("./errors/wrapAsyncHandler");
+const isValidStudent = require("./errors/isValidStudent");
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
@@ -82,7 +90,7 @@ app.get("/", async (req, res) => {
 });
 
 const present = (res, page_name, args) => {
-    for(const missing_arg of ["pageTitle", "stylesheetLink", "scriptLink"]) {
+    for(const missing_arg of ["pageTitle", "stylesheetLink", "scriptLink", "error", "message"]) {
         if(!args[missing_arg]) {
             args[missing_arg] = "";
         }
@@ -90,16 +98,55 @@ const present = (res, page_name, args) => {
     res.render(page_name, args);
 };
 
-// show the login page
-app.get("/login", (req, res) => {
-    const {username, error, message} = req.session;
-    console.log(`pre-filled username: ${username}, error = ${error}, message = ${message}`)
+// show the signup page
+app.get("/signup", (req, res) => {
+    const {error, message} = req.session;
     req.session.destroy(err => {
         if (err) {
             console.log(err);
         }
     });
-    res.render("login", {username, error, message});
+    present(res, "Signup", {
+        pageTitle: "Sign Up",
+        error,
+        message,
+    })
+});
+
+// handle the request to signup
+app.post("/signup", async (req, res) => {
+    try {
+        const {iitb_roll_number, username, password, secret_question, secret_answer} = req.body;
+        console.log(`iitb_roll_number: ${iitb_roll_number}, username: ${username}, password: ${password}, secret_question: ${secret_question}, secret_answer: ${secret_answer}`);
+        const new_login = new Login({ username, password, secret_question, secret_answer, "IITB Roll Number": iitb_roll_number });
+        await new_login.validate();
+        await new_login.save();
+        const new_student = new Student({ "IITB Roll Number": iitb_roll_number });
+        await new_student.validate();
+        await new_student.save();
+        req.session.iitb_roll_number = iitb_roll_number;
+        res.redirect("/profile");
+    } catch(error) {
+        console.log(error);
+        req.session.error = "Signup failed. Please try again.";
+        res.redirect("/signup");
+    }
+})
+
+// show the login page
+app.get("/login", (req, res) => {
+    const {username, error, message} = req.session;
+    req.session.destroy(err => {
+        if (err) {
+            console.log(err);
+        }
+    });
+    present(res, "login", {
+        pageTitle: "Login",
+        username,
+        error,
+        message,
+    })
 });
 
 // handling request to login
@@ -126,10 +173,12 @@ app.post("/login", async (req, res) => {
 
 // show the "forgot password: enter your username" page
 app.get("/forgot", (req, res) => {
-    res.render("forgot_username");
+    present(res, "forgot_username", {
+        pageTitle: "Forgot Password",
+    });
 })
 
-// show the "forgot password: answer the secret question" page
+// handle the incoming username and show the secret question
 app.post("/secret-question", async (req, res) => {
     const {username} = req.body;
     console.log(`username: ${username}`);
@@ -138,10 +187,11 @@ app.post("/secret-question", async (req, res) => {
         if(!login) {
             throw new Error("User not found");
         }
-        res.render("forgot_secret_question", {
+        present(res, "forgot_secret_question", {
+            pageTitle: "Forgot Password",
             username,
             secret_question: login["secret_question"],
-        });
+        })
     } catch(err) {
         req.session.error = "User not found";
         console.log(err);
@@ -170,45 +220,41 @@ app.post("/forgot", async (req, res) => {
 });
 
 // show the dashboard
-app.get("/dashboard", async (req, res) => {
-    try {
-        const {iitb_roll_number} = req.session;
-        if(!iitb_roll_number) {
-            throw new Error("Not logged in");
-        }
-        const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-        console.log(student);
-        present(res, "dashboard", {
-            pageTitle: "My Dashboard", 
-            stylesheetLink: "/css/dashboard_styles.css", 
-            student,
-        });
-    } catch (error) {
-        console.log(error);
-        req.session.error = "Not logged in";
-        res.redirect("/login");
+app.get("/dashboard", wrapAsyncHandler(async (req, res, next) => {
+    const {iitb_roll_number} = req.session;
+    if(!iitb_roll_number) {
+        throw new AuthenticationError("Not logged in");
     }
-});
+    const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
+    console.log(`In dashboard: student = ${student}`)
+    if(!isValidStudent(student)) {
+        throw new IncompleteDataError("Student data is incomplete");
+    }
+    console.log(student);
+    present(res, "dashboard", {
+        pageTitle: "My Dashboard", 
+        stylesheetLink: "/css/dashboard_styles.css", 
+        student,
+    });
+}))
 
 // show the profile page
-app.get("/profile", async (req, res) => {
-    try {
-        const {iitb_roll_number} = req.session;
-        if(!iitb_roll_number) {
-            throw new Error("Not logged in");
-        }
-        const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-        console.log(student);
-        present(res, "dating", {
-            pageTitle: "My Profile",
-            student,
-        });
-    } catch (error) {
-        console.log(error);
-        req.session.error = "Not logged in";
-        res.redirect("/login");
+app.get("/profile", wrapAsyncHandler(async (req, res, next) => {
+    const {iitb_roll_number} = req.session;
+    if(!iitb_roll_number) {
+        throw new AuthenticationError("Not logged in");
     }
-});
+    const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
+    const {error} = req.session;
+    req.session.error = "";
+    console.log(`In profile: error = ${error}`);
+    console.log(student);
+    present(res, "dating", {
+        pageTitle: "My Profile",
+        student,
+        error,
+    });
+}))
 
 // handle the request to update the profile
 app.post("/match", (req, res) => {
@@ -225,37 +271,66 @@ app.post("/match", (req, res) => {
 });
 
 // show the match page
-app.get("/match", async (req, res) => {
-    try {
-        const {iitb_roll_number} = req.session;
-        if(!iitb_roll_number) {
-            throw new Error("Not logged in");
-        }
-        const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-        const match_id = await script.find_perfect_match(student);
-        if(!match_id) {
-            present(res, "no_match", {
-                pageTitle: "No match found",
-                student,
-            });
-            return;
-        }
-        const match = await Student.findById(match_id);
-        const canLike = !match["Likes"].includes(iitb_roll_number);
-        console.log(`Match found: ${match}`);
-        present(res, "match", {
-            pageTitle: "It's a match!",
-            scriptLink: "/js/like.js",
-            student,
-            match,
-            canLike,
-        });
-    } catch (error) {
-        console.log(error);
-        req.session.error = "Not logged in";
-        res.redirect("/login");
+app.get("/match", wrapAsyncHandler(async (req, res, next) => {
+    const {iitb_roll_number} = req.session;
+    if(!iitb_roll_number) {
+        throw new AuthenticationError("Not logged in");
     }
-});
+    const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
+    if(!isValidStudent(student)) {
+        throw new IncompleteDataError("Student data is incomplete");
+    }
+    const match_id = await script.find_perfect_match(student);
+    if(!match_id) {
+        present(res, "no_match", {
+            pageTitle: "No match found",
+            student,
+        });
+        return;
+    }
+    const match = await Student.findById(match_id);
+    const canLike = !match["Likes"].includes(iitb_roll_number);
+    console.log(`Match found: ${match}`);
+    present(res, "match", {
+        pageTitle: "It's a match!",
+        scriptLink: "/js/like.js",
+        student,
+        match,
+        canLike,
+    });
+}))
+
+// app.get("/match", async (req, res) => {
+//     try {
+//         const {iitb_roll_number} = req.session;
+//         if(!iitb_roll_number) {
+//             throw new Error("Not logged in");
+//         }
+//         const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
+//         const match_id = await script.find_perfect_match(student);
+//         if(!match_id) {
+//             present(res, "no_match", {
+//                 pageTitle: "No match found",
+//                 student,
+//             });
+//             return;
+//         }
+//         const match = await Student.findById(match_id);
+//         const canLike = !match["Likes"].includes(iitb_roll_number);
+//         console.log(`Match found: ${match}`);
+//         present(res, "match", {
+//             pageTitle: "It's a match!",
+//             scriptLink: "/js/like.js",
+//             student,
+//             match,
+//             canLike,
+//         });
+//     } catch (error) {
+//         console.log(error);
+//         req.session.error = "Not logged in";
+//         res.redirect("/login");
+//     }
+// });
 
 const suitable_profiles = async looking_roll_no => {
     const compatible_gender = gender1 => {
@@ -373,4 +448,19 @@ app.get("*", (req, res) => {
     present(res, "error404", {
         pageTitle: "Error 404",
     });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err);
+    if(err instanceof AuthenticationError) {
+        req.session.error = "Not logged in";
+        res.redirect("/login");
+    } else if(err instanceof IncompleteDataError) {
+        req.session.error = "Please complete your profile information";
+        res.redirect("/profile");
+    } else {
+        console.log("Wierd error!");
+        res.send(err);
+    }
 });

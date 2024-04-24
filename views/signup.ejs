@@ -1,0 +1,36 @@
+<%- include('partials/prelogin_header.ejs') %>
+
+    <%- include('partials/display_alert') %>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 display-box">
+            <form action="signup" method="post">
+                <legend class="mb-3">Find Your Match: Sign Up Today!</legend>
+                <div class="mb-3 row">
+                    <div class="col-xxl-4 col-lg-6">
+                        <label for="iitb_roll_number" class="form-label">IITB Roll Number</label>
+                        <input type="text" class="form-control" id="iitb_roll_number" name="iitb_roll_number">
+                    </div>
+                    <div class="col-xxl-4 col-lg-6">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username">
+                    </div>
+                    <div class="col-xxl-4">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="secret_question" class="form-label">Secret Question</label>
+                    <input type="text" class="form-control" id="secret_question" name="secret_question">
+                </div>
+                <div class="mb-3">
+                    <label for="secret_answer" class="form-label">Answer to Secret Question</label>
+                    <input type="text" class="form-control" id="secret_answer" name="secret_answer">
+                </div>
+                <button type="submit" class="btn btn-primary">Sign Up!</button>
+            </form>
+        </div>
+    </div>
+
+<%- include('partials/footer.ejs') %>
