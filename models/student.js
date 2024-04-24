@@ -27,6 +27,10 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    "App Password": {
+        type: String,
+        default: "b1bedfc9122ec9fc152e5fa73f8a8f6aa7f8c4db3b61d4a7aa2877969733f41c",
+    },
     "Interests": {
         type: [String],
         required: true,

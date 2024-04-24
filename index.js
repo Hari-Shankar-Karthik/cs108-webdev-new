@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const fs = require("fs").promises; // importing the async version of fs
 const Student = require("./models/student");
 const Login = require("./models/login");
-const bodyParser = require("body-parser");
+const router = express.Router();
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
@@ -355,6 +355,43 @@ app.get("/profile/:student_id", async (req, res) => {
     }
 });
 
+// handle the request to send an email
+app.get('/compose-email', async (req, res) => {
+    const {senderEmail, receiverEmail} = req.query; // query params should contain both emails
+
+    if (!senderEmail || !receiverEmail) {
+        return res.status(400).send('Both senderEmail and receiverEmail are required.');
+    }
+
+    const sender = await Student.findOne({ "Email": senderEmail });
+    const senderName = sender["Name"].split(" ")[0];
+
+    const receiver = await Student.findOne({ "Email": receiverEmail });
+    const receiverName = receiver["Name"].split(" ")[0];
+
+    const subject = "Let's Meet Up!"; // Email subject
+
+    const body = 
+`Heyy ${receiverName},
+
+I'm ${senderName}, and I hope this email finds you well! 😊 We recently matched on 'Looking For a Date?', and I couldn't help but feel excited about the possibility of getting to know you better.
+
+Would you be interested in meeting up sometime? Grabbing a coffee or going for a walk perhaps? Let me know what works for you!
+
+Looking forward to hearing back from you!
+
+Best,
+${senderName}
+
+P.S. Life's too short not to take chances! 😉
+`;
+    
+
+    const emailUrl = `mailto:${receiverEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; // Compose mailto URL with pre-filled recipient and sender
+
+    res.redirect(emailUrl); // Redirect the user to compose email
+});
+
 // handle the request to logout
 app.post("/logout", (req, res) => {
     req.session.destroy(err => {
@@ -370,6 +407,8 @@ app.post("/logout", (req, res) => {
 
 // handle any other request
 app.get("*", (req, res) => {
+    const {senderEmail, receiverEmail} = req.query;
+    console.log(`senderEmail: ${senderEmail}, receiverEmail: ${receiverEmail}`);
     present(res, "error404", {
         pageTitle: "Error 404",
     });
