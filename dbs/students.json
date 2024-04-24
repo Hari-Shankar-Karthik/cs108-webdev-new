@@ -42,27 +42,5 @@
         "Hobbies": ["Reading"],
         "Email": "jennifer.lopez@gmail.com",
         "Photo": "https://images.unsplash.com/photo-1504194699279-06555b45735c?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-    },
-    {
-        "IITB Roll Number": "23B0907",
-        "Name": "Hari Shankar Karthik",
-        "Year of Study": "1st",
-        "Age": 22,
-        "Gender": "Male",
-        "Interests": ["Technology", "Traveling", "Music", "Movies"],
-        "Hobbies": ["Coding", "Playing musical instruments"],
-        "Email": "harishankarkarthik.93@gmail.com",
-        "Photo": "https://images.unsplash.com/photo-1703003908812-6149ba8ac1d7?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-    },
-    {
-        "IITB Roll Number": "23B1982",
-        "Name": "Lavanya Saranathan",
-        "Year of Study": "4th",
-        "Age": 22,
-        "Gender": "Female",
-        "Interests": ["Literature", "Art", "Fashion", "Movies", "Sports", "Technology", "Traveling", "Music"],
-        "Hobbies": ["Reading", "Cooking", "Coding", "Painting", "Playing musical instruments", "Photography"],
-        "Email": "23b0907@iitb.ac.in",
-        "Photo": "https://images.unsplash.com/photo-1613764670482-4bbbfb09b389?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     }
 ]

@@ -26,19 +26,5 @@
         "secret_question": "JKL's secret question...?",
         "secret_answer": "JKL",
         "IITB Roll Number": "23B0904"
-    },
-    {
-        "username": "Hari",
-        "password": "Jenna@Mar07",
-        "secret_question": "What is your favourite TV show?",
-        "secret_answer": "The Office",
-        "IITB Roll Number": "23B0907"
-    },
-    {
-        "username": "Lavanya",
-        "password": "password",
-        "secret_question": "How many siblings do you have?",
-        "secret_answer": "0",
-        "IITB Roll Number": "23B1982"
     }
 ]
