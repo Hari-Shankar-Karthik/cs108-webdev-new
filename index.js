@@ -253,11 +253,14 @@ app.get("/dashboard", wrapAsyncHandler(async (req, res, next) => {
     if(!student) {
         throw new IncompleteDataError("Student data is incomplete");
     }
+    const {message} = req.session;
+    req.session.message = "";
     console.log(student);
     present(res, "dashboard", {
         pageTitle: "My Dashboard", 
         stylesheetLink: "/css/dashboard_styles.css", 
         student,
+        message,
     });
 }))
 
@@ -271,9 +274,6 @@ app.get("/profile", wrapAsyncHandler(async (req, res, next) => {
     if(!student) {
         throw new IncompleteDataError("Student data is incomplete");
     }
-    // const {error} = req.session;
-    // req.session.error = "";
-    // console.log(`In profile: error = ${error}`);
     console.log(student);
     present(res, "dating", {
         pageTitle: "My Profile",
@@ -282,18 +282,34 @@ app.get("/profile", wrapAsyncHandler(async (req, res, next) => {
     });
 }))
 
-// handle the request to update the profile
-app.post("/match", (req, res) => {
+// function to handle update to profile from and redirect appropriately
+const updateProfile = async (req, callback) => {
     const {iitb_roll_number} = req.session;
     console.log(iitb_roll_number);
     Student.findOneAndUpdate({ "IITB Roll Number": iitb_roll_number }, req.body, {new: true, runValidators: true})
         .then(student => {
-            console.log(`student updated: ${student}`);
-            res.redirect("/match");
+            callback(student);
         })
         .catch(err => {
             console.log(err);
         });
+}
+
+// handle the request to update the profile and redirect to the dashboard
+app.post("/update-profile", (req, res) => {
+    updateProfile(req, student => {
+        console.log(`student updated: ${student}`);
+        req.session.message = "Profile updated successfully.";
+        res.redirect("/dashboard");
+    });
+})
+
+// handle the request to update the profile and redirect to the match page
+app.post("/match", (req, res) => {
+    updateProfile(req, student => {
+        console.log(`student updated: ${student}`);
+        res.redirect("/match");
+    });
 });
 
 // show the match page
