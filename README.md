@@ -3,8 +3,6 @@
 ## NOTE:
 - Make a new terminal command nodemon -g index.js which shows all the console.log info that I'm currently showing. nodemon index.js will not show this stuff in its final form.
 
-- Add body-parser to the latex report.
-
 - ESSENTIAL: signup, error 404, quickchat, email chat
 
 - Only allowed one 'find match' per session.

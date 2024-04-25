@@ -5,18 +5,26 @@
     <div class="container my-5 justify-content-center col-10 col-sm-8 col-md-6 col-xl-4">
         <div class="display-box row d-flex justify-content-center">
             <form action="/login" method="post">
-                <legend>Welcome Back!</legend>
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" aria-describedby="usernameHelp" value="<%= username %>">
+                <div class="d-flex flex-column justify-content-center mb-5">
+                    <legend>Welcome Back!</legend>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" aria-describedby="usernameHelp" value="<%= username %>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" name="password" id="password">
+                        <!-- Forgot password option -->
+                        <div id="passwordHelp" class="form-text">Forgot your password? <a href="/forgot">Click here</a></div>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <button type="submit" class="col-12 btn btn-primary">Submit</button>
                 </div>
                 <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" name="password" id="password">
-                    <!-- Forgot password option -->
-                    <div id="passwordHelp" class="form-text">Forgot your password? <a href="/forgot">Click here</a></div>
+                    <!-- Signup option -->
+                    <div id="signupOption" class="fs-6 text-center form-text">Not a Member? <a href="/signup">Signup Now!</a></div>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
     </div>

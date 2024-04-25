@@ -2,6 +2,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
 }
 
 .display-box {
@@ -35,4 +36,13 @@ body {
     100% {
         color: red;
     }
+}
+
+.link-style {
+    text-decoration: none; /* Remove default underline */
+    /* color: inherit; Use the same color as surrounding text */
+}
+
+.link-style:hover {
+    text-decoration: underline; /* Add underline on hover for indication */
 }

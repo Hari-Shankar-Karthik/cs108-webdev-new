@@ -1,10 +1,22 @@
 <%- include('partials/header.ejs') %>
 
-    <%- include('partials/display_alert.ejs') %>
+    <%- include('partials/display_alert') %>
+
+    <% if(!isStudentCreated) { %>
+        <% student = {
+            "IITB Roll Number": iitb_roll_number,
+            "Interests": [],
+            "Hobbies": [],
+        } %>
+    <% } %>
 
     <main class="container">
         <div class="container mt-5 display-box">
-            <form action="/match" method="post">
+            <% if(!isStudentCreated) { %>
+                <form action="/complete-profile" method="post">
+            <% } else { %>
+                <form action="/match" method="post">
+            <% } %>
                 <legend>Let's Get to Know You</legend>
                 <div class="row mb-3">
                     <div class="col-md-4 col-lg-2">
@@ -39,12 +51,35 @@
                     <div class="col-md-4">
                         <!-- Gender -->
                         <label class="form-label text-center" for="gender">Gender</label>
-                        <select class="form-select" name="gender">
+                        <select class="form-select" name="Gender">
                             <% for(const gender of ["Male", "Female", "Other"]) { %>
                                 <option value="<%= gender %>" <%= student["Gender"] === gender ? "selected" : "" %>><%= gender %></option>
                             <% } %>
                         </select>
                     </div>
+                </div>
+                <!-- Photo -->
+                <div class="mb-3">
+                    <label for="photo" class="form-label"><a class="link-style" href="" data-bs-toggle="modal" data-bs-target="#commonsModal">Profile Photo URL</a></label>
+                    <!-- Modal -->
+                    <div class="modal fade" id="commonsModal" tabindex="-1" aria-labelledby="commonsModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="commonsModalLabel">Local Image File</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    If you want to upload a local image file, please do the following:
+                                    <ol>
+                                        <li>Move the image into the <b>public/imgs</b> directory.</li>
+                                        <li>Enter <b>/imgs/&lt;filename&gt;</b> in the 'Profile Photo URL' textbox.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input value="<%= student["Photo"] %>" id="photo" name="Photo" type="text" class="form-control">
                 </div>
                 <!-- Interests -->
                 <% all_interests = ["Traveling", "Sports", "Movies", "Music", "Literature", "Technology", "Fashion", "Art"] %>
@@ -68,7 +103,13 @@
                         </div>
                     <% } %>
                 </div>
-                <button class="btn btn-primary">Find Match!</button>
+                <button class="btn btn-primary">
+                    <% if(!isStudentCreated) { %>
+                        Complete Profile
+                    <% } else { %>
+                        Find Match!
+                    <% } %>
+                </button>
             </form>
         </div>
     </main>

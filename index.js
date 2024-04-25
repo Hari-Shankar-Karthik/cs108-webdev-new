@@ -15,7 +15,7 @@ const Login = require("./models/login");
 const AuthenticationError = require("./errors/AuthenticationError");
 const IncompleteDataError = require("./errors/IncompleteDataError");
 const wrapAsyncHandler = require("./errors/wrapAsyncHandler");
-const isValidStudent = require("./errors/isValidStudent");
+// const isValidStudent = require("./errors/isValidStudent");
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
@@ -75,20 +75,6 @@ app.listen(8000, () => {
     console.log("Listening on port 8000");
 });
 
-// dummy route - for debugging only
-app.get("/", async (req, res) => {
-    try {
-        const all_logins = await Login.find({})
-        const all_students = await Student.find({})
-        console.log(all_logins);
-        console.log(all_students);
-        res.send("Hello World");
-    } catch(err) {
-        console.log(err);
-        res.send("Error");
-    }
-});
-
 const present = (res, page_name, args) => {
     for(const missing_arg of ["pageTitle", "stylesheetLink", "scriptLink", "error", "message"]) {
         if(!args[missing_arg]) {
@@ -116,22 +102,59 @@ app.get("/signup", (req, res) => {
 // handle the request to signup
 app.post("/signup", async (req, res) => {
     try {
-        const {iitb_roll_number, username, password, secret_question, secret_answer} = req.body;
-        console.log(`iitb_roll_number: ${iitb_roll_number}, username: ${username}, password: ${password}, secret_question: ${secret_question}, secret_answer: ${secret_answer}`);
-        const new_login = new Login({ username, password, secret_question, secret_answer, "IITB Roll Number": iitb_roll_number });
+        // const {iitb_roll_number, username, password, secret_question, secret_answer} = req.body;
+        // console.log(`iitb_roll_number: ${iitb_roll_number}, username: ${username}, password: ${password}, secret_question: ${secret_question}, secret_answer: ${secret_answer}`);
+        // const new_login = new Login({ username, password, secret_question, secret_answer, "IITB Roll Number": iitb_roll_number });
+        const new_login = new Login(req.body);
         await new_login.validate();
         await new_login.save();
-        const new_student = new Student({ "IITB Roll Number": iitb_roll_number });
-        await new_student.validate();
-        await new_student.save();
-        req.session.iitb_roll_number = iitb_roll_number;
-        res.redirect("/profile");
+        req.session.iitb_roll_number = new_login["IITB Roll Number"];
+        res.redirect("/complete-profile")
     } catch(error) {
         console.log(error);
-        req.session.error = "Signup failed. Please try again.";
+        if(error.code === 11000 && error.keyPattern && error.keyValue) {
+            console.log("Heyy, this is a mongoose.Error.ValidationError.");
+            console.log(error);
+            req.session.error = "Invalid credentials. Please try again.";
+        } else {
+            req.session.error = "Signup failed. Please try again.";
+        }
         res.redirect("/signup");
     }
 })
+
+// show the complete profile page (while getting started only)
+app.get("/complete-profile", wrapAsyncHandler(async (req, res, next) => {
+    const {iitb_roll_number} = req.session;
+    if(!iitb_roll_number) {
+        throw new AuthenticationError("Not logged in");
+    }
+    const {error} = req.session;
+    req.session.error = "";
+    present(res, "dating", {
+        pageTitle: "Complete Profile",
+        iitb_roll_number,
+        error,
+        isStudentCreated: false,
+    });
+}));
+
+// handle the request to complete the profile
+app.post("/complete-profile", async (req, res) => {
+    try {
+        const {iitb_roll_number} = req.session;
+        console.log(iitb_roll_number);
+        console.log(`in POST /complete-profile, req.body: ${JSON.stringify(req.body)}`);
+        const new_student = new Student({"IITB Roll Number": iitb_roll_number, ...req.body});
+        await new_student.validate();
+        await new_student.save();
+        res.redirect("/dashboard");
+    } catch(err) {
+        console.log(err);
+        req.session.error = "Profile update failed. Please try again.";
+        res.redirect("/complete-profile");
+    } 
+});
 
 // show the login page
 app.get("/login", (req, res) => {
@@ -227,7 +250,7 @@ app.get("/dashboard", wrapAsyncHandler(async (req, res, next) => {
     }
     const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
     console.log(`In dashboard: student = ${student}`)
-    if(!isValidStudent(student)) {
+    if(!student) {
         throw new IncompleteDataError("Student data is incomplete");
     }
     console.log(student);
@@ -245,14 +268,17 @@ app.get("/profile", wrapAsyncHandler(async (req, res, next) => {
         throw new AuthenticationError("Not logged in");
     }
     const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-    const {error} = req.session;
-    req.session.error = "";
-    console.log(`In profile: error = ${error}`);
+    if(!student) {
+        throw new IncompleteDataError("Student data is incomplete");
+    }
+    // const {error} = req.session;
+    // req.session.error = "";
+    // console.log(`In profile: error = ${error}`);
     console.log(student);
     present(res, "dating", {
         pageTitle: "My Profile",
         student,
-        error,
+        isStudentCreated: true,
     });
 }))
 
@@ -277,7 +303,7 @@ app.get("/match", wrapAsyncHandler(async (req, res, next) => {
         throw new AuthenticationError("Not logged in");
     }
     const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-    if(!isValidStudent(student)) {
+    if(!student) {
         throw new IncompleteDataError("Student data is incomplete");
     }
     const match_id = await script.find_perfect_match(student);
@@ -300,38 +326,6 @@ app.get("/match", wrapAsyncHandler(async (req, res, next) => {
     });
 }))
 
-// app.get("/match", async (req, res) => {
-//     try {
-//         const {iitb_roll_number} = req.session;
-//         if(!iitb_roll_number) {
-//             throw new Error("Not logged in");
-//         }
-//         const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-//         const match_id = await script.find_perfect_match(student);
-//         if(!match_id) {
-//             present(res, "no_match", {
-//                 pageTitle: "No match found",
-//                 student,
-//             });
-//             return;
-//         }
-//         const match = await Student.findById(match_id);
-//         const canLike = !match["Likes"].includes(iitb_roll_number);
-//         console.log(`Match found: ${match}`);
-//         present(res, "match", {
-//             pageTitle: "It's a match!",
-//             scriptLink: "/js/like.js",
-//             student,
-//             match,
-//             canLike,
-//         });
-//     } catch (error) {
-//         console.log(error);
-//         req.session.error = "Not logged in";
-//         res.redirect("/login");
-//     }
-// });
-
 const suitable_profiles = async looking_roll_no => {
     const compatible_gender = gender1 => {
         if(gender1 === "Male") {
@@ -344,31 +338,31 @@ const suitable_profiles = async looking_roll_no => {
     }
 
     const looking_student = await Student.findOne({ "IITB Roll Number": looking_roll_no });
+    console.log("Looking student: ", looking_student);
     const suitable_gender = compatible_gender(looking_student["Gender"]);
     return await Student.find({ "IITB Roll Number": { $ne: looking_roll_no }, "Gender": suitable_gender });
 }
 
 // show the scroll/swipe page
-app.get("/explore", async (req, res) => {
-    try {
-        const {iitb_roll_number} = req.session;
-        if(!iitb_roll_number) {
-            throw new Error("Not logged in");
-        }
-        console.log(iitb_roll_number);
-        const profiles = await suitable_profiles(iitb_roll_number)
-        present(res, "scroll_or_swipe", {
-            pageTitle: "Explore",
-            stylesheetLink: "/css/scroll_or_swipe_styles.css",
-            profiles,
-        });
-        // res.render("scroll_or_swipe_temp");
-    } catch (error) {
-        console.log(error);
-        req.session.error = "Not logged in";
-        res.redirect("/login");
+app.get("/explore", wrapAsyncHandler(async (req, res, next) => {
+    const {iitb_roll_number} = req.session;
+    if(!iitb_roll_number) {
+        throw new AuthenticationError("Not logged in");
     }
-});
+    const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
+    console.log(`In explore: student = ${student}`);
+    if(!student) {
+        throw new IncompleteDataError("Student data is incomplete");
+    }
+    console.log(iitb_roll_number);
+    const profiles = await suitable_profiles(iitb_roll_number);
+    console.log(`In explore: suitable_profiles = ${profiles}`);
+    present(res, "scroll_or_swipe", {
+        pageTitle: "Explore",
+        stylesheetLink: "/css/scroll_or_swipe_styles.css",
+        profiles,
+    });
+}));
 
 // Define a route for liking a profile
 app.post('/hitLike', async (req, res) => {
@@ -395,40 +389,37 @@ app.post('/hitLike', async (req, res) => {
 });
   
 // show the profile of a specific student
-app.get("/profile/:student_id", async (req, res) => {
-    try {
-        const {iitb_roll_number} = req.session;
-        if(!iitb_roll_number) {
-            throw new Error("Not logged in");
-        }
-        const {student_id} = req.params;
-        const student = await Student.findById(student_id);
-        const canLike = !student["Likes"].includes(iitb_roll_number);
-        console.log(student);
-        // Incrementing the view count
-        // To prevent views from increasing my simply doing multiple refreshes, store the viewed students in the session
-        if(!req.session.viewed_students) {
-            req.session.viewed_students = [];
-        }
-        if(!req.session.viewed_students.includes(student_id)) {
-            req.session.viewed_students.push(student_id);
-            student["Views"] += 1;
-            await student.save();
-        }
-        present(res, "profile", {
-            pageTitle: `${student["Name"].split(" ")[0]}'s Profile`,
-            stylesheetLink: "/css/profile_styles.css",
-            scriptLink: "/js/like.js",
-            iitb_roll_number,
-            student,
-            canLike,
-        });
-    } catch (error) {
-        console.log(error);
-    req.session.error = "Not logged in";
-        res.redirect("/login");
+app.get("/profile/:student_id", wrapAsyncHandler(async (req, res, next) => {
+    const {iitb_roll_number} = req.session;
+    if(!iitb_roll_number) {
+        throw new AuthenticationError("Not logged in");
     }
-});
+    const {student_id} = req.params;
+    const student = await Student.findById(student_id);
+    if(!student) {
+        throw new IncompleteDataError("Student not found");
+    }
+    const canLike = !student["Likes"].includes(iitb_roll_number);
+    console.log(student);
+    // Incrementing the view count
+    // To prevent views from increasing my simply doing multiple refreshes, store the viewed students in the session
+    if(!req.session.viewed_students) {
+        req.session.viewed_students = [];
+    }
+    if(!req.session.viewed_students.includes(student_id)) {
+        req.session.viewed_students.push(student_id);
+        student["Views"] += 1;
+        await student.save();
+    }
+    present(res, "profile", {
+        pageTitle: `${student["Name"].split(" ")[0]}'s Profile`,
+        stylesheetLink: "/css/profile_styles.css",
+        scriptLink: "/js/like.js",
+        iitb_roll_number,
+        student,
+        canLike,
+    });
+}));
 
 // handle the request to logout
 app.post("/logout", (req, res) => {
@@ -457,8 +448,8 @@ app.use((err, req, res, next) => {
         req.session.error = "Not logged in";
         res.redirect("/login");
     } else if(err instanceof IncompleteDataError) {
-        req.session.error = "Please complete your profile information";
-        res.redirect("/profile");
+        req.session.error = "Please complete your profile info";
+        res.redirect("/complete-profile");
     } else {
         console.log("Wierd error!");
         res.send(err);
