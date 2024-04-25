@@ -4,7 +4,7 @@
     
     <main class="container">
         <!-- Welcome section -->
-        <div class="mx-3 my-5 row">
+        <div class="display-box mx-3 my-5 row">
             <div class="col-lg-6 d-flex flex-column justify-content-center">
                 <h1 class="text-center display-2">Heyy, <%= student["Name"].split(" ")[0] %>!</h1>
                 <% one_liners = [ "Ready to dance through the digital cosmos and find your perfect harmony?", "Welcome to the playground of possibilities - let's swing into love!", "Get ready to paint the digital town red with romance and laughter.", "Embark on a digital adventure where love knows no bounds.", "Sprinkle some digital stardust and watch love bloom in pixels.", "Dive into the digital ocean - where every wave carries a chance at love.", "Navigate the digital maze of love and uncover hidden treasures.", "Ignite sparks in the digital sky and create a constellation of love.", "Welcome to the digital realm of romance - where every click is a step closer to love.", "Embark on a digital voyage filled with laughter, love, and endless possibilities." ] %>
@@ -22,7 +22,7 @@
 
         <!-- Stats section -->
         <div class="mx-3 my-5 row justify-content-center">
-            <div class="col-md-6 bg-white img-thumbnail">
+            <div class="col-md-6 display-box">
                 <h2 class="text-center display-3">My Stats</h2>
                 <hr>
                 <div class="row">
@@ -42,8 +42,21 @@
 
         <!-- Inbox section -->
         <div class="mx-3 my-5 row justify-content-center">
-            <div class="col-md-6 border">
-                <h2 class="text-center display-3">My Inbox</h2>
+            <div class="col-lg-6 col-md-8 display-box">
+                <h2 class="text-center display-3 mb-3">My Inbox</h2>
+                <% for(const sender in numChats) { %>
+                    <div class="card mb-3">
+                        <div class="card-body row">
+                            <div class="col-md-8 mb-3">
+                                <h5 class="card-title"><%= sender %></h5>
+                                <p class="card-text"><%= numChats[sender] %> unread messages</p>
+                            </div>
+                            <div class="col-md-4 d-flex flex-column justify-content-end align-items-end">
+                                <a href="/open/in/chat" class="card-link">Open in chat</a>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
             </div>
         </div>
     </main>

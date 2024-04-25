@@ -10,6 +10,7 @@ const script = require("./script"); // contains the matching algorithm
 // Import the models
 const Student = require("./models/student");
 const Login = require("./models/login");
+const Chat = require("./models/chat");
 
 // Import the custom error handlers
 const AuthenticationError = require("./errors/AuthenticationError");
@@ -83,6 +84,13 @@ const present = (res, page_name, args) => {
     }
     res.render(page_name, args);
 };
+
+// debugging route
+app.get("/debug", async (req, res) => {
+    const quickChats = await Chat.find({});
+    console.log(`quickChats = ${quickChats}`)
+    res.send("Debugging route");
+});
 
 // show the signup page
 app.get("/signup", (req, res) => {
@@ -256,11 +264,26 @@ app.get("/dashboard", wrapAsyncHandler(async (req, res, next) => {
     const {message} = req.session;
     req.session.message = "";
     console.log(student);
+
+    // get all QuickChats that this student has not yet seen
+    const unreadMessages = await Chat.find({ to: iitb_roll_number, viewed: false});
+    
+    // get the number of messages from each sender
+    const numChats = {};
+    for(const message of unreadMessages) {
+        const senderName = (await Student.findOne({ "IITB Roll Number": message.from }))["Name"];
+        if(!numChats[senderName]) {
+            numChats[senderName] = 0;
+        }
+        numChats[senderName] += 1;
+    }
+
     present(res, "dashboard", {
         pageTitle: "My Dashboard", 
         stylesheetLink: "/css/dashboard_styles.css", 
         student,
         message,
+        numChats,
     });
 }))
 

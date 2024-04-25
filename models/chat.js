@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
+const Student = require('./student');
 
 // function to check whether the sender/receiver students exist
-const studentValidator = async username => {
-    const student = await mongoose.model('Student').findOne({username});
+const studentValidator = async iitb_roll_number => {
+    const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
     if (!student) {
-        throw new Error(`Invalid student username: ${username}`);
+        throw new Error(`Invalid roll number: ${iitb_roll_number}`);
     }
 };
 
@@ -28,7 +29,11 @@ const chatSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 1,
-    }
+    },
+    viewed: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const Chat = mongoose.model('Chat', chatSchema);
