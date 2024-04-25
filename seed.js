@@ -4,6 +4,7 @@
 const mongoose = require('mongoose');
 const fs = require('fs').promises;
 
+const Login = require('./models/login');
 const Student = require('./models/student');
 const Chat = require('./models/chat');
 
@@ -16,20 +17,28 @@ mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
             await Student.deleteMany({});
             console.log('Existing students data cleared from database');
             
+            await Login.deleteMany({});
+            console.log('Existing login data cleared from database');
+
+            await Chat.deleteMany({});
+            console.log('Existing chat data cleared from database');
+
             // Read data from students.json
             const studentsData = JSON.parse(await fs.readFile('./dbs/students.json', 'utf-8'));
             // Insert students data into database
             await Student.insertMany(studentsData);
             console.log('New students data inserted into database');
 
-            // Clear existing chat data
-            await Chat.deleteMany({});
-            console.log('Existing chat data cleared from database');
+            // Read data from login.json
+            const loginData = JSON.parse(await fs.readFile('./dbs/login.json', 'utf-8'));
+            // Insert login data into database
+            await Login.insertMany(loginData);
+            console.log('New login data inserted into database');
 
             // Seed chat with a few messages
+            // TODO: remove later
             const allStudents = await Student.find({});
             const allRollNumbers = allStudents.map(student => student['IITB Roll Number']);
-            console.log(`allRollNumbers: ${allRollNumbers}`);
             const chatSeedSize = 100;
             for(let i = 0; i < chatSeedSize; i++) {
                 const from = allRollNumbers[Math.floor(Math.random() * allRollNumbers.length)];
@@ -42,13 +51,13 @@ mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
                     });
                     await chat.validate();
                     await chat.save();
-                    console.log(`from: ${from}, to: ${to}`);
                 }
             }
             console.log('Chat data seeded into database');
 
             // Close MongoDB connection
             mongoose.connection.close();
+            console.log('MongoDB connection closed');
         } catch (err) {
             console.error('Error:', err);
         }

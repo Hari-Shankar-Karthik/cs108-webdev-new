@@ -22,28 +22,6 @@ const wrapAsyncHandler = require("./errors/wrapAsyncHandler");
 mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
     .then(async () => {
         console.log('MongoDB connected');
-        try {
-            // Clear existing data
-            await Student.deleteMany({});
-            console.log('Existing students data cleared from database');
-            
-            await Login.deleteMany({});
-            console.log('Existing login data cleared from database');
-
-            // Read data from students.json
-            const studentsData = JSON.parse(await fs.readFile('./dbs/students.json', 'utf-8'));
-            // Insert students data into database
-            await Student.insertMany(studentsData);
-            console.log('New students data inserted into database');
-
-            // Read data from login.json
-            const loginData = JSON.parse(await fs.readFile('./dbs/login.json', 'utf-8'));
-            // Insert login data into database
-            await Login.insertMany(loginData);
-            console.log('New login data inserted into database');
-        } catch (err) {
-            console.error('Error:', err);
-        }
     })
     .catch(err => {
         console.error('MongoDB connection error:', err)
@@ -85,13 +63,6 @@ const present = (res, page_name, args) => {
     res.render(page_name, args);
 };
 
-// debugging route
-app.get("/debug", async (req, res) => {
-    const quickChats = await Chat.find({});
-    console.log(`quickChats = ${quickChats}`)
-    res.send("Debugging route");
-});
-
 // show the signup page
 app.get("/signup", (req, res) => {
     const {error, message} = req.session;
@@ -110,9 +81,6 @@ app.get("/signup", (req, res) => {
 // handle the request to signup
 app.post("/signup", async (req, res) => {
     try {
-        // const {iitb_roll_number, username, password, secret_question, secret_answer} = req.body;
-        // console.log(`iitb_roll_number: ${iitb_roll_number}, username: ${username}, password: ${password}, secret_question: ${secret_question}, secret_answer: ${secret_answer}`);
-        // const new_login = new Login({ username, password, secret_question, secret_answer, "IITB Roll Number": iitb_roll_number });
         const new_login = new Login(req.body);
         await new_login.validate();
         await new_login.save();
@@ -121,8 +89,6 @@ app.post("/signup", async (req, res) => {
     } catch(error) {
         console.log(error);
         if(error.code === 11000 && error.keyPattern && error.keyValue) {
-            console.log("Heyy, this is a mongoose.Error.ValidationError.");
-            console.log(error);
             req.session.error = "Invalid credentials. Please try again.";
         } else {
             req.session.error = "Signup failed. Please try again.";
@@ -151,8 +117,6 @@ app.get("/complete-profile", wrapAsyncHandler(async (req, res, next) => {
 app.post("/complete-profile", async (req, res) => {
     try {
         const {iitb_roll_number} = req.session;
-        console.log(iitb_roll_number);
-        console.log(`in POST /complete-profile, req.body: ${JSON.stringify(req.body)}`);
         const new_student = new Student({"IITB Roll Number": iitb_roll_number, ...req.body});
         await new_student.validate();
         await new_student.save();
@@ -184,13 +148,11 @@ app.get("/login", (req, res) => {
 // verify credentials and redirect to dashboard, or show error message
 app.post("/login", async (req, res) => {
     const {username, password} = req.body;
-    console.log(`username: ${username}, password: ${password}`);
     Login.findOne({username, password})
         .then(login => {
             if(!login) {
                 throw new Error("Invalid credentials");
             } else {
-                console.log(`${login["IITB Roll Number"]} logged in successfully.`);
                 req.session.iitb_roll_number = login["IITB Roll Number"];
                 res.redirect("/dashboard");
             }
@@ -212,7 +174,6 @@ app.get("/forgot", (req, res) => {
 // handle the incoming username and show the secret question
 app.post("/secret-question", async (req, res) => {
     const {username} = req.body;
-    console.log(`username: ${username}`);
     try {
         const login = await Login.findOne({username});
         if(!login) {
@@ -233,13 +194,11 @@ app.post("/secret-question", async (req, res) => {
 // handle the request to answer the secret question
 app.post("/forgot", async (req, res) => {
     const {username, secret_answer} = req.body;
-    console.log(`username: ${username}, secret_answer: ${secret_answer}`);
     try {
         const login = await Login.findOne({username, secret_answer});
         if(!login) {
             throw new Error("Secret answer is incorrect");
         }
-        console.log(`Secret answer is correct, password is ${login["password"]}`);
         req.session.username = username;
         req.session.message = `Your password is ${login["password"]}.`;
         res.redirect("/login");
@@ -257,25 +216,26 @@ app.get("/dashboard", wrapAsyncHandler(async (req, res, next) => {
         throw new AuthenticationError("Not logged in");
     }
     const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-    console.log(`In dashboard: student = ${student}`)
     if(!student) {
         throw new IncompleteDataError("Student data is incomplete");
     }
     const {message} = req.session;
     req.session.message = "";
-    console.log(student);
 
     // get all QuickChats that this student has not yet seen
     const unreadMessages = await Chat.find({ to: iitb_roll_number, viewed: false});
+    console.log(`Unread messages: ${unreadMessages}`)
     
     // get the number of messages from each sender
     const numChats = {};
+    const names = {};
     for(const message of unreadMessages) {
-        const senderName = (await Student.findOne({ "IITB Roll Number": message.from }))["Name"];
-        if(!numChats[senderName]) {
-            numChats[senderName] = 0;
+        const sender = await Student.findOne({ "IITB Roll Number": message.from });
+        if(!numChats[sender["_id"]]) {
+            numChats[sender["_id"]] = 0;
+            names[sender["_id"]] = sender["Name"];
         }
-        numChats[senderName] += 1;
+        numChats[sender["_id"]] += 1;
     }
 
     present(res, "dashboard", {
@@ -284,8 +244,59 @@ app.get("/dashboard", wrapAsyncHandler(async (req, res, next) => {
         student,
         message,
         numChats,
+        names,
     });
 }))
+
+// show the chat page
+app.get("/chat/:student2ID", wrapAsyncHandler(async (req, res, next) => {
+    const {iitb_roll_number} = req.session;
+    if(!iitb_roll_number) {
+        throw new AuthenticationError("Not logged in");
+    }
+    const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
+    if(!student) {
+        throw new IncompleteDataError("Student data is incomplete");
+    }
+    const {student2ID} = req.params;
+    const student2 = await Student.findById(student2ID);
+    const student2RollNumber = student2["IITB Roll Number"];
+    const chats = await Chat.find({
+        $or: [
+            { $and: [{ from: iitb_roll_number }, { to: student2RollNumber }] },
+            { $and: [{ from: student2RollNumber }, { to: iitb_roll_number }] }
+        ]
+    }).sort({ createdAt: 1 });
+    
+    // mark all messages as read
+    for(const chat of chats) {
+        if(chat.to === iitb_roll_number) {
+            chat.viewed = true;
+            await chat.save();
+        }
+    }
+
+    present(res, "chat", {
+        pageTitle: `Chat with ${student2["Name"].split(" ")[0]}`,
+        stylesheetLink: "/css/chat_styles.css",
+        scriptLink: "/js/chat_script.js",
+        chats,
+        student,
+        student2,
+    });
+}))
+
+// handle the request to send a chat message
+app.post("/chat/:student2ID", async (req, res) => {
+    const {iitb_roll_number} = req.session;
+    const {student2ID} = req.params;
+    const student2 = await Student.findById(student2ID);
+    const student2RollNumber = student2["IITB Roll Number"];
+    const {new_message} = req.body;
+    const newChat = new Chat({from: iitb_roll_number, to: student2RollNumber, message: new_message});
+    await newChat.save();
+    res.redirect(`/chat/${student2ID}`);
+})
 
 // show the profile page
 app.get("/profile", wrapAsyncHandler(async (req, res, next) => {
@@ -297,7 +308,6 @@ app.get("/profile", wrapAsyncHandler(async (req, res, next) => {
     if(!student) {
         throw new IncompleteDataError("Student data is incomplete");
     }
-    console.log(student);
     present(res, "dating", {
         pageTitle: "My Profile",
         student,
@@ -308,7 +318,6 @@ app.get("/profile", wrapAsyncHandler(async (req, res, next) => {
 // function to handle update to profile from and redirect appropriately
 const updateProfile = async (req, callback) => {
     const {iitb_roll_number} = req.session;
-    console.log(iitb_roll_number);
     Student.findOneAndUpdate({ "IITB Roll Number": iitb_roll_number }, req.body, {new: true, runValidators: true})
         .then(student => {
             callback(student);
@@ -321,7 +330,6 @@ const updateProfile = async (req, callback) => {
 // handle the request to update the profile and redirect to the dashboard
 app.post("/update-profile", (req, res) => {
     updateProfile(req, student => {
-        console.log(`student updated: ${student}`);
         req.session.message = "Profile updated successfully.";
         res.redirect("/dashboard");
     });
@@ -330,7 +338,6 @@ app.post("/update-profile", (req, res) => {
 // handle the request to update the profile and redirect to the match page
 app.post("/match", (req, res) => {
     updateProfile(req, student => {
-        console.log(`student updated: ${student}`);
         res.redirect("/match");
     });
 });
@@ -355,7 +362,6 @@ app.get("/match", wrapAsyncHandler(async (req, res, next) => {
     }
     const match = await Student.findById(match_id);
     const canLike = !match["Likes"].includes(iitb_roll_number);
-    console.log(`Match found: ${match}`);
     present(res, "match", {
         pageTitle: "It's a match!",
         scriptLink: "/js/like.js",
@@ -377,7 +383,6 @@ const suitable_profiles = async looking_roll_no => {
     }
 
     const looking_student = await Student.findOne({ "IITB Roll Number": looking_roll_no });
-    console.log("Looking student: ", looking_student);
     const suitable_gender = compatible_gender(looking_student["Gender"]);
     return await Student.find({ "IITB Roll Number": { $ne: looking_roll_no }, "Gender": suitable_gender });
 }
@@ -389,13 +394,10 @@ app.get("/explore", wrapAsyncHandler(async (req, res, next) => {
         throw new AuthenticationError("Not logged in");
     }
     const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-    console.log(`In explore: student = ${student}`);
     if(!student) {
         throw new IncompleteDataError("Student data is incomplete");
     }
-    console.log(iitb_roll_number);
     const profiles = await suitable_profiles(iitb_roll_number);
-    console.log(`In explore: suitable_profiles = ${profiles}`);
     present(res, "scroll_or_swipe", {
         pageTitle: "Explore",
         stylesheetLink: "/css/scroll_or_swipe_styles.css",
@@ -408,7 +410,6 @@ app.post('/hitLike', async (req, res) => {
     try {
         const {iitb_roll_number} = req.session;
         const { likerRollNo, likedID } = req.body;
-        console.log(`Liker Roll No: ${likerRollNo}, Liked ID: ${likedID}, Session Roll No: ${iitb_roll_number}`)
         if(!likerRollNo || !likedID || likerRollNo !== iitb_roll_number) {
             throw new Error('Invalid request');
         }
@@ -418,7 +419,6 @@ app.post('/hitLike', async (req, res) => {
             throw new Error('Already liked');
         }
         const updatedRecord = await Student.findByIdAndUpdate(likedID, { $push: { "Likes": likerRollNo } }, { new: true, runValidators: true });
-        console.log(updatedRecord);
         // Update the record using Mongoose
         res.json(updatedRecord);
     } catch (error) {
@@ -439,7 +439,6 @@ app.get("/profile/:student_id", wrapAsyncHandler(async (req, res, next) => {
         throw new IncompleteDataError("Student not found");
     }
     const canLike = !student["Likes"].includes(iitb_roll_number);
-    console.log(student);
     // Incrementing the view count
     // To prevent views from increasing my simply doing multiple refreshes, store the viewed students in the session
     if(!req.session.viewed_students) {
@@ -467,7 +466,6 @@ app.post("/logout", (req, res) => {
             console.log(err);
             res.redirect("/dashboard");
         } else {
-            console.log("Logged out successfully.");
             res.redirect("/login");
         }
     });
@@ -490,7 +488,6 @@ app.use((err, req, res, next) => {
         req.session.error = "Please complete your profile info";
         res.redirect("/complete-profile");
     } else {
-        console.log("Wierd error!");
         res.send(err);
     }
 });

@@ -1,0 +1,37 @@
+.sender {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.timestamp {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+.my-message {
+    text-align: right;
+}
+
+.my-color {
+    background-color: #e0ffdb
+}
+
+.opp-color {
+    background-color: #ece7e1;
+}
+
+.display-box {
+    padding: 0;
+}
+
+.subnav-sticky {
+    position: sticky;
+    top: 50px;
+    width: 100%;
+}
+
+.scrolled {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.3s ease-in-out;
+}

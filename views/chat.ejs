@@ -1,0 +1,28 @@
+<%- include('partials/header.ejs') %>
+    <div class="container mt-5 d-flex flex-column justify-content-center">
+        <div class="row justify-content-center">
+            <div class="display-box col-md-8 col-lg-6 d-flex flex-column">
+                <h1 class="subnav-sticky text-center mb-4"><a class="link-style" href="/profile/<%= student2["_id"] %>"><%= student2["Name"] %></a></h1>
+                <% for(const message of chats) { %>
+                    <div class="mx-3 mb-3 d-flex flex-column <%= message["from"] === student["IITB Roll Number"] ? "align-self-end" : "align-self-start" %>">
+                        <div class="border <%= message["from"] === student["IITB Roll Number"] ? "ps-5 pe-2 rounded-start-pill my-color" : "pe-5 ps-2 rounded-end-pill opp-color" %>">
+                            <div class="mb-1"><%= message["message"] %></div>
+                            <div class="timestamp"><%= message["timestamp"].toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></div>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        <div class="mt-4 row justify-content-center">
+            <form action="/chat/<%= student2["_id"] %>" method="post" class="col-md-8 col-lg-6">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Message" id="new_message" name="new_message">
+                    <button class="btn btn-secondary">Send</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<%- include('partials/footer.ejs') %>

@@ -40,7 +40,7 @@ body {
 
 .link-style {
     text-decoration: none; /* Remove default underline */
-    /* color: inherit; Use the same color as surrounding text */
+    color: inherit; /* Use the same color as surrounding text */
 }
 
 .link-style:hover {

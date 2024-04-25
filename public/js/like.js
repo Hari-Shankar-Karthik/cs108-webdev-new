@@ -3,7 +3,6 @@
 // The like button is disabled for those who have already liked the profile.
 // There is no feature (at present) to unlike a profile.
 
-console.log("like.js loaded");
 const likeButton = document.querySelector('#like-button');
 
 // If the user has already liked the profile, disable the like button

@@ -48,11 +48,11 @@
                     <div class="card mb-3">
                         <div class="card-body row">
                             <div class="col-md-8 mb-3">
-                                <h5 class="card-title"><%= sender %></h5>
+                                <h5 class="card-title"><%= names[sender] %></h5>
                                 <p class="card-text"><%= numChats[sender] %> unread messages</p>
                             </div>
                             <div class="col-md-4 d-flex flex-column justify-content-end align-items-end">
-                                <a href="/open/in/chat" class="card-link">Open in chat</a>
+                                <a href="/chat/<%= sender %>" class="card-link">Open in chat</a>
                             </div>
                         </div>
                     </div>
