@@ -1,3 +1,5 @@
+const Student = require("./models/student");
+
 const suitable = async looking_roll_no => {
     const compatible_gender = gender1 => {
         if(gender1 === "Male") {
@@ -22,7 +24,7 @@ const suitable = async looking_roll_no => {
 // m = number of interests chosen, n = number of hobbies chosen
 // Therefore match_score = 0.6 * common_interests/m + 0.4 * common_hobbies/n - 0.1 * age_difference
 // The student with the highest match_score is the perfect match
-module.exports.find_perfect_match = async iitb_roll_number => {
+const find_perfect_match = async iitb_roll_number => {
     // count the common interests/hobbies
     const count_common = (list_1, list_2) => list_1.filter(value => list_2.includes(value)).length;
 
@@ -42,6 +44,7 @@ module.exports.find_perfect_match = async iitb_roll_number => {
     
     const looking_student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
     let matching_roll_number = null;
+    
     let match_stats = [0, Infinity]; // match_stats stores (common interests/hobbies, age difference)
     const suitable_roll_numbers = await suitable(iitb_roll_number);
     const suitable_profiles = await Student.find({ "IITB Roll Number": { $in: suitable_roll_numbers } });
@@ -69,6 +72,6 @@ const list_scores = async iitb_roll_number => {
 
 
 module.exports = {
-    suitable_profiles,
+    suitable,
     find_perfect_match
 }
