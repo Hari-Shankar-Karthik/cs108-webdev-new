@@ -352,15 +352,15 @@ app.get("/match", wrapAsyncHandler(async (req, res, next) => {
     if(!student) {
         throw new IncompleteDataError("Student data is incomplete");
     }
-    const match_id = await script.find_perfect_match(student);
-    if(!match_id) {
+    const match_roll_number = await script.find_perfect_match(iitb_roll_number);
+    if(!match_roll_number) {
         present(res, "no_match", {
             pageTitle: "No match found",
             student,
         });
         return;
     }
-    const match = await Student.findById(match_id);
+    const match = await Student.findOne({ "IITB Roll Number": match_roll_number });
     const canLike = !match["Likes"].includes(iitb_roll_number);
     present(res, "match", {
         pageTitle: "It's a match!",
@@ -370,22 +370,6 @@ app.get("/match", wrapAsyncHandler(async (req, res, next) => {
         canLike,
     });
 }))
-
-const suitable_profiles = async looking_roll_no => {
-    const compatible_gender = gender1 => {
-        if(gender1 === "Male") {
-            return "Female";
-        }
-        if(gender1 === "Female") {
-            return "Male";
-        }
-        return "Other";
-    }
-
-    const looking_student = await Student.findOne({ "IITB Roll Number": looking_roll_no });
-    const suitable_gender = compatible_gender(looking_student["Gender"]);
-    return await Student.find({ "IITB Roll Number": { $ne: looking_roll_no }, "Gender": suitable_gender });
-}
 
 // show the scroll/swipe page
 app.get("/explore", wrapAsyncHandler(async (req, res, next) => {
@@ -397,7 +381,8 @@ app.get("/explore", wrapAsyncHandler(async (req, res, next) => {
     if(!student) {
         throw new IncompleteDataError("Student data is incomplete");
     }
-    const profiles = await suitable_profiles(iitb_roll_number);
+    const suitable_roll_numbers = await script.suitable(iitb_roll_number);
+    const profiles = await Student.find({ "IITB Roll Number": { $in: suitable_roll_numbers } });
     present(res, "scroll_or_swipe", {
         pageTitle: "Explore",
         stylesheetLink: "/css/scroll_or_swipe_styles.css",

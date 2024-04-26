@@ -34,7 +34,7 @@ const studentSchema = new mongoose.Schema({
     },
     "Hobbies": {
         type: [String],
-        enum: ["Reading", "Cooking", "Coding", "Gardening", "Painting", "Watching Youtube/Instagram", "Playing musical instruments", "Photography"],
+        enum: ["Reading", "Cooking", "Coding", "Gardening", "Painting", "Watching Youtube/Instagram", "Playing musical instruments", "Photography"] ,
         required: true,
     },
     "Photo": {
