@@ -44,6 +44,9 @@
         <div class="mx-3 my-5 row justify-content-center">
             <div class="col-lg-6 col-md-8 display-box">
                 <h2 class="text-center display-3 mb-3">My Inbox</h2>
+                <% if(Object.keys(numChats).length === 0) { %>
+                    <p class="lead text-center">No unread messages. Start swiping to find your match!</p>
+                <% } %>
                 <% for(const sender in numChats) { %>
                     <div class="card mb-3">
                         <div class="card-body row">
