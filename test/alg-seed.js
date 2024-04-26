@@ -19,7 +19,7 @@ mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
             console.log('Existing students data cleared from database');
 
             // Insert seed data
-            const numStudents = 1000;
+            const numStudents = 180;
             for(let i = 1; i <= numStudents; i++) {
                 const newStudent = new Student({
                     "IITB Roll Number": `${i}`,

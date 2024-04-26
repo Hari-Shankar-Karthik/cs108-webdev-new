@@ -63,6 +63,12 @@ const present = (res, page_name, args) => {
     res.render(page_name, args);
 };
 
+// debug
+// app.get("/debug", async (req, res) => {
+//     script.list_scores("1");
+//     res.send("Debugging");
+// })
+
 // show the signup page
 app.get("/signup", (req, res) => {
     const {error, message} = req.session;
