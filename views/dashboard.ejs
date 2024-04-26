@@ -17,51 +17,48 @@
                 </div>
             </div>
         </div>
-
-        <hr>
-
-        <!-- Stats section -->
-        <div class="mx-3 my-5 row justify-content-center">
-            <div class="col-md-6 display-box">
-                <h2 class="text-center display-3">My Stats</h2>
-                <hr>
-                <div class="row">
-                    <div class="text-center col-sm-6 d-flex flex-column">
-                        <p class="display-4"><%= student["Views"] %></p>
-                        <p class="lead">Views 👁</p>
-                    </div>
-                    <div class="text-center col-sm-6 d-flex flex-column">
-                        <p class="display-4"><%= student["Likes"].length %></p>
-                        <p class="lead">Likes ❤</p>
+        <div class="row m-3 justify-content-center">
+            <!-- Stats -->
+            <div class="mb-5 col-lg-6 d-flex flex-column justify-content-center align-items-center">
+                <div class="col-md-6 display-box">
+                    <h2 class="text-center display-3">My Stats</h2>
+                    <hr>
+                    <div class="row">
+                        <div class="text-center col-sm-6 d-flex flex-column">
+                            <p class="display-4"><%= student["Views"] %></p>
+                            <p class="lead">Views 👁</p>
+                        </div>
+                        <div class="text-center col-sm-6 d-flex flex-column">
+                            <p class="display-4"><%= student["Likes"].length %></p>
+                            <p class="lead">Likes ❤</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <hr>
-
-        <!-- Inbox section -->
-        <div class="mx-3 my-5 row justify-content-center">
-            <div class="col-lg-6 col-md-8 display-box">
-                <h2 class="text-center display-3 mb-3">My Inbox</h2>
-                <% if(Object.keys(numChats).length === 0) { %>
-                    <p class="lead text-center">No unread messages. Start swiping to find your match!</p>
-                <% } %>
-                <% for(const sender in numChats) { %>
-                    <div class="card mb-3">
-                        <div class="card-body row">
-                            <div class="col-md-8 mb-3">
-                                <h5 class="card-title"><%= names[sender] %></h5>
-                                <p class="card-text"><%= numChats[sender] %> unread messages</p>
-                            </div>
-                            <div class="col-md-4 d-flex flex-column justify-content-end align-items-end">
-                                <a href="/chat/<%= sender %>" class="card-link">Open in chat</a>
+            <!-- Inbox -->
+            <div class="mb-5 col-lg-6 row justify-content-center">
+                <div class="display-box">
+                    <h2 class="text-center display-3 mb-3">My Inbox</h2>
+                    <% if(Object.keys(numChats).length === 0) { %>
+                        <p class="lead text-center">No unread messages. Start swiping to find your match!</p>
+                    <% } %>
+                    <% for(const sender in numChats) { %>
+                        <div class="card mb-3">
+                            <div class="card-body row">
+                                <div class="col-md-8 mb-3">
+                                    <h5 class="card-title"><%= names[sender] %></h5>
+                                    <p class="card-text"><%= numChats[sender] %> unread messages</p>
+                                </div>
+                                <div class="col-md-4 d-flex flex-column justify-content-end align-items-end">
+                                    <a href="/chat/<%= sender %>" class="card-link">Open in chat</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <% } %>
+                    <% } %>
+                </div>
             </div>
-        </div>
+        </div>        
     </main>
 
 <%- include('partials/footer.ejs') %>
