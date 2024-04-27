@@ -450,6 +450,26 @@ app.get("/profile/:student_id", wrapAsyncHandler(async (req, res, next) => {
     });
 }));
 
+// route to show the email page
+app.get("/email/:matchID", wrapAsyncHandler(async (req, res) => {
+    const {iitb_roll_number} = req.session;
+    if(!iitb_roll_number) {
+        throw new AuthenticationError("Not logged in");
+    }
+    const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
+    if(!student) {
+        throw new IncompleteDataError("Student data is incomplete");
+    }
+    const {matchID} = req.params;
+    const match = await Student.findById(matchID);
+    console.log(`Match: ${match}`);
+    present(res, "email", {
+        pageTitle: "Email",
+        student,
+        match,
+    });
+}));
+
 // handle the request to logout
 app.post("/logout", (req, res) => {
     req.session.destroy(err => {

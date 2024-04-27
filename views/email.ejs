@@ -1,0 +1,45 @@
+<%- include('partials/header.ejs') %>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 display-box">
+            <form action="https://formsubmit.co/<%= match["Email"] %>" method="POST">
+                <legend>Why wait? Reach out and connect!</legend>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label for="email" class="form-label">Receiver's Address</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<%= match["Email"] %>">
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="subject" name="subject" value="You've Got a Match! 💌">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="html" class="form-label">Body</label>
+                    <textarea class="form-control" id="html" name="html" rows="20">
+Heyy <%= match["Name"].split(" ")[0] %>,
+
+We hope this email finds you in good spirits! We're thrilled to inform you that a user from our dating website has expressed interest in connecting with you.
+
+<b><%= student["Name"] %></b> has taken the initiative to reach out and get to know you better. You can view their profile <a href="/profile/<%= student["_id"] %>">here</a>.
+
+If you're interested in learning more about <%= student["Name"].split(" ")[0] %> and potentially starting a conversation, feel free to connect at <%= student["Email"] %>.
+
+We're here to facilitate connections and make the journey to finding love a little bit easier. Wishing you both the best in your budding connection!
+
+Warm regards,
+Looking For a Date?
+
+P.S. - Love is in the air, so why not give it a chance? 😉
+                    </textarea>
+                </div>
+
+                <div class="row justify-content-center">
+                    <button class="col-md-3 btn btn-primary">Send Email</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+<%- include('partials/footer.ejs') %>
