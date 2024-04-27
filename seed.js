@@ -37,23 +37,23 @@ mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
 
             // Seed chat with a few messages
             // TODO: remove later
-            const allStudents = await Student.find({});
-            const allRollNumbers = allStudents.map(student => student['IITB Roll Number']);
-            const chatSeedSize = 100;
-            for(let i = 0; i < chatSeedSize; i++) {
-                const from = allRollNumbers[Math.floor(Math.random() * allRollNumbers.length)];
-                const to = allRollNumbers[Math.floor(Math.random() * allRollNumbers.length)];
-                if(from !== to) {
-                    const chat = new Chat({
-                        from,
-                        to,
-                        message: `Message ${i + 1}`,
-                    });
-                    await chat.validate();
-                    await chat.save();
-                }
-            }
-            console.log('Chat data seeded into database');
+            // const allStudents = await Student.find({});
+            // const allRollNumbers = allStudents.map(student => student['IITB Roll Number']);
+            // const chatSeedSize = 100;
+            // for(let i = 0; i < chatSeedSize; i++) {
+            //     const from = allRollNumbers[Math.floor(Math.random() * allRollNumbers.length)];
+            //     const to = allRollNumbers[Math.floor(Math.random() * allRollNumbers.length)];
+            //     if(from !== to) {
+            //         const chat = new Chat({
+            //             from,
+            //             to,
+            //             message: `Message ${i + 1}`,
+            //         });
+            //         await chat.validate();
+            //         await chat.save();
+            //     }
+            // }
+            // console.log('Chat data seeded into database');
 
             // Close MongoDB connection
             mongoose.connection.close();
