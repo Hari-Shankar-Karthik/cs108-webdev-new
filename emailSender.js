@@ -1,28 +1,19 @@
-require('dotenv').config(); // Load environment variables from .env file
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.email",
+    host: "smtp.gmail.com",
     port: 587,
     secure: false, // Use `true` for port 465, `false` for all other ports
     auth: {
-        user: process.env.EMAIL_USER, // Using environment variable
-        pass: process.env.EMAIL_PASS // Using environment variable,
+    user: process.env.EMAIL_USER,
+    pass: process.env.APP_PASS,
     },
 });
 
-// Function to send email
-const sendEmail = async (transporter, mailOptions) => {
-    // Send mail with defined transport object
-    transporter.sendMail(mailOptions)
-        .then(info => {
-            console.log(`Email sent: ${info.messageId}`);
-            return info;
-        })
-        .catch(err => {
-            console.log(`Error sending email: ${err}`);
-            throw err;
-        });
+async function sendEmail(transporter, mailOptions) {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Message sent: %s", info.messageId);
 }
 
-module.exports = sendEmail;
+module.exports = { transporter, sendEmail };

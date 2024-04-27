@@ -4,6 +4,8 @@ const session = require("express-session"); // for session management
 const path = require("path");
 const fs = require("fs").promises; // importing the async version of fs
 const mongoose = require("mongoose"); // for storing data in MongoDB
+const nodemailer = require("nodemailer"); // for sending emails
+require("dotenv").config(); // for reading environment variables
 
 const script = require("./script"); // contains the matching algorithm
 
@@ -95,7 +97,8 @@ app.post("/signup", async (req, res) => {
     } catch(error) {
         console.log(error);
         if(error.code === 11000 && error.keyPattern && error.keyValue) {
-            req.session.error = "Invalid credentials. Please try again.";
+            console.log("ERROR: ", error.keyValue, " already exists");
+            req.session.error = `User with this ${Object.keys(error.keyValue)[0]} already exists.`;
         } else {
             req.session.error = "Signup failed. Please try again.";
         }
@@ -230,8 +233,7 @@ app.get("/dashboard", wrapAsyncHandler(async (req, res, next) => {
 
     // get all QuickChats that this student has not yet seen
     const unreadMessages = await Chat.find({ to: iitb_roll_number, viewed: false});
-    console.log(`Unread messages: ${unreadMessages}`)
-    
+
     // get the number of messages from each sender
     const numChats = {};
     const names = {};
@@ -380,6 +382,7 @@ app.get("/match", wrapAsyncHandler(async (req, res, next) => {
 // show the scroll/swipe page
 app.get("/explore", wrapAsyncHandler(async (req, res, next) => {
     const {iitb_roll_number} = req.session;
+    // Use the query parameters as needed
     if(!iitb_roll_number) {
         throw new AuthenticationError("Not logged in");
     }
@@ -387,12 +390,14 @@ app.get("/explore", wrapAsyncHandler(async (req, res, next) => {
     if(!student) {
         throw new IncompleteDataError("Student data is incomplete");
     }
+    const { quickchat } = req.query; // quickchat is a boolean which is true if the user explicitly wants to quickchat
     const suitable_roll_numbers = await script.suitable(iitb_roll_number);
     const profiles = await Student.find({ "IITB Roll Number": { $in: suitable_roll_numbers } });
     present(res, "scroll_or_swipe", {
         pageTitle: "Explore",
         stylesheetLink: "/css/scroll_or_swipe_styles.css",
         profiles,
+        quickchat,
     });
 }));
 
@@ -440,13 +445,15 @@ app.get("/profile/:student_id", wrapAsyncHandler(async (req, res, next) => {
         student["Views"] += 1;
         await student.save();
     }
+    const {quickchat} = req.query; // quickchat is a boolean which is true if the user explicitly wants to quickchat
     present(res, "profile", {
         pageTitle: `${student["Name"].split(" ")[0]}'s Profile`,
         stylesheetLink: "/css/profile_styles.css",
-        scriptLink: "/js/like.js",
+        scriptLink: "/js/profile_script.js",
         iitb_roll_number,
         student,
         canLike,
+        quickchat,
     });
 }));
 
@@ -469,6 +476,39 @@ app.get("/email/:matchID", wrapAsyncHandler(async (req, res) => {
         match,
     });
 }));
+
+// Set up the transporter to send emails
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // Use `true` for port 465, `false` for all other ports
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.APP_PASS,
+    },
+});
+
+app.post("/email/:matchID", async (req, res) => {
+    const {iitb_roll_number} = req.session;
+    const {matchID} = req.params;
+    const {subject, html} = req.body;
+    const match = await Student.findById(matchID);
+    const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
+    const mailOptions = {
+        from: '"Looking For a Date?" <lookingforadate81@gmail.com>',
+        to: match["Email"],
+        subject,
+        html,
+    };
+    
+    try {
+        console.log(`from: ${mailOptions.from}, to: ${mailOptions.to}, subject: ${mailOptions.subject}`);
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`Message sent: ${info.messageId}`);
+    } catch(err) {
+        console.log(err);
+    }
+})
 
 // handle the request to logout
 app.post("/logout", (req, res) => {

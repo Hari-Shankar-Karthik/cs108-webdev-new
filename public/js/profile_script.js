@@ -1,3 +1,10 @@
+// if quickchat is true, scroll to the bottom of the page
+if(document.querySelector("#quickchat").textContent === "true") {
+    window.onload = function() {
+        window.scrollTo(0,document.body.scrollHeight);
+    };
+}
+
 // The Like Button
 // When the like button is pressed, this user is added to the list of users who have liked this particular profile.
 // The like button is disabled for those who have already liked the profile.
@@ -33,4 +40,3 @@ likeButton.addEventListener("click", () => {
         console.error('Error:', error);
     });  
 })
-  
