@@ -4,8 +4,6 @@ const session = require("express-session"); // for session management
 const path = require("path");
 const fs = require("fs").promises; // importing the async version of fs
 const mongoose = require("mongoose"); // for storing data in MongoDB
-const nodemailer = require("nodemailer"); // for sending emails
-require("dotenv").config(); // for reading environment variables
 
 const script = require("./script"); // contains the matching algorithm
 
@@ -429,11 +427,12 @@ app.get("/profile/:student_id", wrapAsyncHandler(async (req, res, next) => {
     if(!iitb_roll_number) {
         throw new AuthenticationError("Not logged in");
     }
+    const currStudent = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
+    if(!currStudent) {
+        throw new IncompleteDataError("Student data is incomplete");
+    }
     const {student_id} = req.params;
     const student = await Student.findById(student_id);
-    if(!student) {
-        throw new IncompleteDataError("Student not found");
-    }
     const canLike = !student["Likes"].includes(iitb_roll_number);
     // Incrementing the view count
     // To prevent views from increasing my simply doing multiple refreshes, store the viewed students in the session
@@ -456,59 +455,6 @@ app.get("/profile/:student_id", wrapAsyncHandler(async (req, res, next) => {
         quickchat,
     });
 }));
-
-// route to show the email page
-app.get("/email/:matchID", wrapAsyncHandler(async (req, res) => {
-    const {iitb_roll_number} = req.session;
-    if(!iitb_roll_number) {
-        throw new AuthenticationError("Not logged in");
-    }
-    const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-    if(!student) {
-        throw new IncompleteDataError("Student data is incomplete");
-    }
-    const {matchID} = req.params;
-    const match = await Student.findById(matchID);
-    console.log(`Match: ${match}`);
-    present(res, "email", {
-        pageTitle: "Email",
-        student,
-        match,
-    });
-}));
-
-// Set up the transporter to send emails
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // Use `true` for port 465, `false` for all other ports
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.APP_PASS,
-    },
-});
-
-app.post("/email/:matchID", async (req, res) => {
-    const {iitb_roll_number} = req.session;
-    const {matchID} = req.params;
-    const {subject, html} = req.body;
-    const match = await Student.findById(matchID);
-    const student = await Student.findOne({ "IITB Roll Number": iitb_roll_number });
-    const mailOptions = {
-        from: '"Looking For a Date?" <lookingforadate81@gmail.com>',
-        to: match["Email"],
-        subject,
-        html,
-    };
-    
-    try {
-        console.log(`from: ${mailOptions.from}, to: ${mailOptions.to}, subject: ${mailOptions.subject}`);
-        const info = await transporter.sendMail(mailOptions);
-        console.log(`Message sent: ${info.messageId}`);
-    } catch(err) {
-        console.log(err);
-    }
-})
 
 // handle the request to logout
 app.post("/logout", (req, res) => {
