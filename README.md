@@ -22,14 +22,14 @@ follow these steps:
                     node index.js
 
 5.  The server is now up and running on port 8000. Open up a web browser
-    and go to [localhost:8000/login](localhost:8000/login){.uri} to
+    and go to [localhost:8000/login](localhost:8000/login) to
     start the fun.
 
 # Some Features of *Looking for a Date?*
 
 ## Login Page
 
-The *Login* page is hosted at [/login](/login){.uri}. It allows existing
+The *Login* page is hosted at [/login](/login). It allows existing
 users to log in by entering the correct username and password that they
 had set. If a user enters their username and password correctly, they
 are redirected to their *Dashboard*. Entering an invalid
@@ -45,23 +45,17 @@ answer the secret question correctly. If either the username or the
 answer to the secret question are incorrect, the user is redirected back
 to the *Login* page with an appropriate alert.
 
-::: center
-::: asidebox
 If the secret question is answered correctly, the username gets
 pre-filled during the redirection to the *Login* page, the user need
 only enter the password.
-:::
 
-::: asidebox
 The redirection to *Login* on entering wrong credentials in the *Forgot*
 page is deliberate as it slows down a malicious agent trying to access
 an account
-:::
-:::
 
 ## Signup
 
-The *Signup* page is hosted at [/signup](/signup){.uri}. A new user
+The *Signup* page is hosted at [/signup](/signup). A new user
 needs to enter their IITB roll number, a username, a password and a
 secret question-answer pair (to be used for password recovery). If an
 account of the given IITB roll number already exists, the user is
@@ -77,16 +71,12 @@ then click on 'Complete Profie' and they are redirected to the
 
 ## Dashboard
 
-The *Dashboard* is hosted at [/dashboard](/dashboard){.uri}. It consists
+The *Dashboard* is hosted at [/dashboard](/dashboard). It consists
 of a lively little greeting message, a stats section and an inbox
 section.
 
-::: center
-::: asidebox
 The little quip you see under the greeting is newly generated every time
 for maximum quirkiness each time you log in.
-:::
-:::
 
 ### Stats Section
 
@@ -117,18 +107,14 @@ person you want to message and open their *QuickChat*.
 
 ## My Profile
 
-*My Profile* is hosted at [/profile](/profile){.uri}. It allows you to
+*My Profile* is hosted at [/profile](/profile). It allows you to
 edit the information you provided during signup, such as age, interests,
 hobbies and so on.
 
-::: center
-::: asidebox
 To use a file on your local machine, copy it into the `public/imgs/`
 directory. Then, enter `/imgs/<filename>` in the profile photo input
 field. The same instructions are also available if you click on the
 'Profile Photo URL' label.
-:::
-:::
 
 You can click on either the **Update Profile** or **Update and Find
 Match** buttons depending on whether or not you want to find a match
@@ -138,7 +124,7 @@ takes you to *Match*.
 
 ## Match
 
-*Match* is hosted at [/match](/match){.uri}. The matching algorithm of
+*Match* is hosted at [/match](/match). The matching algorithm of
 *Looking For a Date?* factors in common interests, hobbies and the age
 difference to find a suitable match for you.
 
@@ -174,27 +160,23 @@ Then, the net score of each profile is given by:
 $$s = 0.6s_i+0.4s_h-0.1a$$ Where $a$ is the age difference between the
 user and this profile.
 
-::: center
-::: asidebox
 The reason behind dividing by the number of hobbies/interests selected
 is so as to disincentivize users from selecting all the boxed to try and
 match better.
-:::
-:::
 
 The match is then the profile which scored the highest. If no profile
 got a positive score, it is deemed that no match is found for the user.
 
 ## Explore
 
-*Explore* is hosted at [/explore](/explore){.uri}. It displays a list of
+*Explore* is hosted at [/explore](/explore). It displays a list of
 all the suitable profiles in card format which the user can scroll
 through. Clicking on any of them redirects the user to the corresponding
 profile page.
 
 ## Profile Page
 
-*Profile* is hosted at [/profile/:profileID](/profile/:profileID){.uri},
+*Profile* is hosted at [/profile/:profileID](/profile/:profileID),
 where `profileID` is this user's ID in the database. The *Profile* page
 consists of the corresponding user's details, such as name, year of
 study, profile photo, interests and hobbies. There is an option to like
@@ -204,7 +186,7 @@ also an option to open up a *QuickChat* with this user.
 
 ## Chat
 
-*Chat* is hosted at [/chat/:profileID](/chat/:profileID){.uri}, where
+*Chat* is hosted at [/chat/:profileID](/chat/:profileID), where
 your chat with the user having ID `profileID` is rendered. *Chat* allows
 for basic text-based messaging. It shows the message sent by you in
 green and to the right, and the messages sent by them in gray and to the
