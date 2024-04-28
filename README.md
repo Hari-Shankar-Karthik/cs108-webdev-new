@@ -12,16 +12,16 @@ follow these steps:
 
 3.  Once this is complete, you are ready to seed *Looking For a Date?*
     with login and student data. Copy the `login.json` and
-    `students.json`. files into the `dbs/` directory. Then, run the
-    command
+    `students.json`. files into the `dbs/` directory (replace the extsting files, if there are any).
+    Then, run the command
 
                     node seed.js
 
-4.  Now, you are ready to start the server. Run the command
+5.  Now, you are ready to start the server. Run the command
 
                     node index.js
 
-5.  The server is now up and running on port 8000. Open up a web browser
+6.  The server is now up and running on port 8000. Open up a web browser
     and go to [localhost:8000/login](localhost:8000/login) to
     start the fun.
 
