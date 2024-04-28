@@ -9,7 +9,7 @@ const Student = require('./models/student');
 const Chat = require('./models/chat');
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
+mongoose.connect('mongodb://localhost:27017/lfad')
     .then(async () => {
         console.log('MongoDB connected');
         try {
@@ -31,6 +31,7 @@ mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
 
             // Read data from login.json
             const loginData = JSON.parse(await fs.readFile('./dbs/login.json', 'utf-8'));
+            // console.log(JSON.stringify(loginData, null, 4));
             // Insert login data into database
             await Login.insertMany(loginData);
             console.log('New login data inserted into database');

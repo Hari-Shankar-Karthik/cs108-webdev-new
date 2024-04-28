@@ -1,0 +1,17 @@
+<%- include('partials/prelogin_header.ejs') %>
+
+    <form action="/link-roll-no" method="post">
+        <legend>Just one more thing</legend>
+        <div class="form-text">We don't seem to have your roll number saved.</div>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input class="form-control" type="text" name="username" id="username" value="<%= login["username"] %>" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="iitb_roll_number" class="form-label">IITB Roll Number</label>
+            <input class="form-control" type="text" name="iitb_roll_number" id="iitb_roll_number">
+        </div>
+        <button class="btn btn-primary">Continue to Dashboard</button>
+    </form>
+
+<%- include('partials/footer.ejs') %>

@@ -19,7 +19,7 @@ const wrapAsyncHandler = require("./errors/wrapAsyncHandler");
 // const isValidStudent = require("./errors/isValidStudent");
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/looking-for-a-date')
+mongoose.connect('mongodb://localhost:27017/lfad')
     .then(async () => {
         console.log('MongoDB connected');
     })
@@ -160,8 +160,18 @@ app.post("/login", async (req, res) => {
             if(!login) {
                 throw new Error("Invalid credentials");
             } else {
-                req.session.iitb_roll_number = login["IITB Roll Number"];
-                res.redirect("/dashboard");
+                // check if IITB Roll Number is present in this login record
+                console.log(`login: ${login}`);
+                if(!login["IITB Roll Number"]) {
+                    present(res, "link_roll_no", {
+                        pageTitle: "Link Roll Number",
+                        login,
+                    });
+                    // res.redirect("/link-roll-no");
+                } else {
+                    req.session.iitb_roll_number = login["IITB Roll Number"];
+                    res.redirect("/dashboard");
+                }
             }
         })
         .catch(err => {
@@ -169,6 +179,15 @@ app.post("/login", async (req, res) => {
             req.session.error = "Invalid credentials";
             res.redirect("/login");
         });
+});
+
+// handle the request to link the roll number
+app.post("/link-roll-no", async (req, res) => {
+    const {username, iitb_roll_number} = req.body;
+    // update the login record with the IITB Roll Number
+    await Login.findOneAndUpdate({username}, { "IITB Roll Number": iitb_roll_number }, {new: true, runValidators: true});
+    req.session.iitb_roll_number = iitb_roll_number;
+    res.redirect("/dashboard");
 });
 
 // show the "forgot password: enter your username" page

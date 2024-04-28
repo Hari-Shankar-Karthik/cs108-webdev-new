@@ -20,8 +20,7 @@ const loginSchema = new mongoose.Schema({
     },
     "IITB Roll Number": {
         type: String,
-        required: true,
-        unique: true
+        default: null,
     },
 });
 
