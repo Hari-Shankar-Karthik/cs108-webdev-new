@@ -152,10 +152,9 @@ For each suitable profile, the interests score $s_i$ is calculated as ($s_i$ is 
 $$s_i = \frac{i_c}{i_s}$$
 Where $i_c$ are $i_s$ are the number of common
 interests and selected interests for this profile. Similarly, the
-hobbies score $s_h$ is calculated as: $$s_h = \begin{cases} 
-      0 & h_s = 0 \\
-      \frac{h_c}{h_s} & \text{otherwise} \\
-   \end{cases}$$
+hobbies score $s_h$ is calculated as: 
+$$s_h = \frac{h_c}{h_s}$$
+and $0$ if $h_s$ is $0$.
 
 Then, the net score of each profile is given by:
 
