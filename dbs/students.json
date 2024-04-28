@@ -8,7 +8,7 @@
         "Interests": ["Literature", "Art", "Fashion", "Movies", "Sports", "Technology", "Traveling", "Music"],
         "Hobbies": ["Reading", "Cooking", "Coding", "Painting", "Playing musical instruments", "Photography"],
         "Email": "alice.cook@gmail.com",
-        "Photo": "/photos/abc-profile-photo.jpg"
+        "Photo": "photos/abc-profile-photo.jpg"
     },
     {
         "IITB Roll Number": "23B0903",
@@ -19,7 +19,7 @@
         "Interests": ["Traveling", "Sports", "Movies", "Music"],
         "Hobbies": ["Playing musical instruments", "Photography"],
         "Email": "graeme.ivanov@gmail.com",
-        "Photo": "/photos/ghi-profile-photo.jpg"
+        "Photo": "photos/ghi-profile-photo.jpg"
     },
     {
         "IITB Roll Number": "23B0902",
@@ -30,7 +30,7 @@
         "Interests": ["Literature", "Technology", "Fashion", "Art"],
         "Hobbies": ["Reading", "Cooking", "Coding", "Painting"],
         "Email": "dave.fischer@gmail.com",
-        "Photo": "/photos/def-profile-photo.jpg"
+        "Photo": "photos/def-profile-photo.jpg"
     },
     {
         "IITB Roll Number": "23B0904",
@@ -41,6 +41,6 @@
         "Interests": ["Literature", "Fashion", "Art", "Sports", "Movies"],
         "Hobbies": ["Reading"],
         "Email": "jennifer.lopez@gmail.com",
-        "Photo": "/photos/jkl-profile-photo.jpg"
+        "Photo": "photos/jkl-profile-photo.jpg"
     }
 ]
