@@ -4,12 +4,12 @@
             <% for(const profile of profiles) { %>
                     <div class="display-box border mb-4 row justify-content-center">
                         <div class="col-md-8 col-lg-4">
-                            <a href="/profile/<%= profile["_id"] %>">
+                            <a href="/profile/<%= profile["_id"] %>?quickchat=<%= quickchat ? 'true' : 'false' %>">
                                 <img class="img-fluid img-thumbnail rounded-pill" src="<%= profile["Photo"] %>" alt="">
                             </a>
                         </div>
                         <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
-                            <a href="/profile/<%= profile["_id"] %>" class="link-style text-center display-4"><%= profile["Name"] %></a>
+                            <a href="/profile/<%= profile["_id"] %>?quickchat=<%= quickchat ? 'true' : 'false' %>" class="link-style text-center display-4"><%= profile["Name"] %></a>
                             <p class="lead"><%= profile["Year of Study"] %> year student, IITB</p>
                         </div>
                     </div>

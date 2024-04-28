@@ -24,15 +24,18 @@ mongoose.connect('mongodb://localhost:27017/lfad')
         console.log('MongoDB connected');
     })
     .catch(err => {
-        console.error('MongoDB connection error:', err)
+        console.log('MongoDB connection error:', err)
     });
 
 // set up the view engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
 
-// set up the public directory (serving static assets)
+// set up the public directory (serving static css and js files)
 app.use(express.static(path.join(__dirname, "/public")));
+
+// set up the photos directory (serving profile photos)
+app.use('/photos', express.static(path.join(__dirname, 'photos')));
 
 // middleware to parse the request body
 app.use(express.urlencoded({extended: true}));
@@ -161,7 +164,6 @@ app.post("/login", async (req, res) => {
                 throw new Error("Invalid credentials");
             } else {
                 // check if IITB Roll Number is present in this login record
-                console.log(`login: ${login}`);
                 if(!login["IITB Roll Number"]) {
                     present(res, "link_roll_no", {
                         pageTitle: "Link Roll Number",
@@ -435,7 +437,7 @@ app.post('/hitLike', async (req, res) => {
         // Update the record using Mongoose
         res.json(updatedRecord);
     } catch (error) {
-        console.error('Error updating record:', error);
+        console.log('Error updating record:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -450,6 +452,7 @@ app.get("/profile/:student_id", wrapAsyncHandler(async (req, res, next) => {
     if(!currStudent) {
         throw new IncompleteDataError("Student data is incomplete");
     }
+    const {quickchat} = req.query; // quickchat is a boolean which is true if the user explicitly wants to quickchat
     const {student_id} = req.params;
     const student = await Student.findById(student_id);
     const canLike = !student["Likes"].includes(iitb_roll_number);
@@ -463,11 +466,10 @@ app.get("/profile/:student_id", wrapAsyncHandler(async (req, res, next) => {
         student["Views"] += 1;
         await student.save();
     }
-    const {quickchat} = req.query; // quickchat is a boolean which is true if the user explicitly wants to quickchat
     present(res, "profile", {
         pageTitle: `${student["Name"].split(" ")[0]}'s Profile`,
         stylesheetLink: "/css/profile_styles.css",
-        scriptLink: "/js/profile_script.js",
+        scriptLink: "/js/like.js",
         iitb_roll_number,
         student,
         canLike,
@@ -496,7 +498,7 @@ app.get("*", (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err);
+    console.log(err);
     if(err instanceof AuthenticationError) {
         req.session.error = "Not logged in";
         res.redirect("/login");
