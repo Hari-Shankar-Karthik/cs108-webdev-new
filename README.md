@@ -7,7 +7,6 @@ follow these steps:
     
 2.    Download and install MongoDB Compass from <https://www.mongodb.com/docs/compass/current/install/>. Follow the instructions specific to your operating system.
 
-
 3.  Download and unzip the server repository (you can download it from
     <https://github.com/Hari-Shankar-Karthik/cs108-webdev-new>).
 
