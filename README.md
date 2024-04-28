@@ -1,124 +1,212 @@
-# cs108-webdev-project
+# Starting the Server
 
-## NOTE:
-- NO: Make a new terminal command nodemon -g index.js which shows all the console.log info that I'm currently showing. nodemon index.js will not show this stuff in its final form.
+To get *Looking For a Date?* up and running on your local machine,
+follow these steps:
 
-- ESSENTIAL: email
+1.  Download and unzip the server repository (you can download it from
+    <https://github.com/Hari-Shankar-Karthik/cs108-webdev-new>).
 
-- Only allowed one 'find match' per session.
+2.  Open a new terminal in the main directory of the server and type
 
-- Change the matching alg. to damp down the chances of someone who has selected more boxes.
-- Subscription increases the chance of match.
+                    npm install
 
-- NO: Add a 'bio' section to each student's profile.
+3.  Once this is complete, you are ready to seed *Looking For a Date?*
+    with login and student data. Copy the `login.json` and
+    `students.json`. files into the `dbs/` directory. Then, run the
+    command
 
-- NO: Include data on branch (department) as well.
+                    node seed.js
 
-## Requirements: 
+4.  Now, you are ready to start the server. Run the command
 
-1) **students.json**
+                    node index.js
 
-- This file will contain an array of dictionaries (like Python dictionaries), each dictionary having all the required details about a particular student.
-- These and only these fields will be present in each dictionary of students.json:- "IITB Roll Number", "Name", "Year of Study", "Age", "Gender", "Interests", "Hobbies", "Email" and "Photo".
-- The only possible options for the "Gender" field are going to be "Male", "Female" and "Other". Only a single option can be chosen for this field.
-- For the "Interests" field, the only possible options are "Traveling", "Sports", "Movies", "Music", "Literature", "Technology", "Fashion" and "Art". One or more options can be chosen for this field.
-- For the "Hobbies" field, the only possible options are "Reading", "Cooking", "Coding", "Gardening", "Painting", "Watching YouTube/Instagram", "Playing musical instruments" and "Photography". One or more options can be chosen for this field.
-- For "Photo", a valid file path to the photo will be given as input.
-- For simplicity, you can assume that in students.json, all fields will be non-empty, with valid inputs. 
+5.  The server is now up and running on port 8000. Open up a web browser
+    and go to [localhost:8000/login](localhost:8000/login){.uri} to
+    start the fun.
 
-2) **login.json**
+# Some Features of *Looking for a Date?*
 
-- Any existing/registered user must have their username and password in login.json.
-- A secret question-answer phrase will be there for every username-password in login.json.
+## Login Page
 
-3) **login.html**
+The *Login* page is hosted at [/login](/login){.uri}. It allows existing
+users to log in by entering the correct username and password that they
+had set. If a user enters their username and password correctly, they
+are redirected to their *Dashboard*. Entering an invalid
+username-password pair will display an alert. There are also options
+like *Forgot Password?* and *Signup* which will redirect to the
+respective routes.
 
-- To access the input interface, there can be a login screen before that, which will require you to enter username and password of some sort. 
-- If you are "registered" and you fill correct entries, then you login, otherwise give appropriate error messages. 
-- Any existing/registered user must have their username and password in login.json. Hence any registered user can access this website (on the same machine) at a much later time in future.
-- You don't need to create a feature (as a Basic Task) to allow a new user to register to the website (i.e. appending a new username, password to login.json).
+## Forgot Password?
 
-4) **forgot.html**
+The *Forgot Password?* page consists of a username prompt. If a valid
+username is entered, the password is alerted to the user once they
+answer the secret question correctly. If either the username or the
+answer to the secret question are incorrect, the user is redirected back
+to the *Login* page with an appropriate alert.
 
-- A secret question-answer phrase will be there for every username-password in login.json. 
-- Whenever a person has to recover a password, they will click some "Forgot Password?" button in the login page. 
-- Then a new page opens up where they will provide their username as input and then the secret question corresponding to the username should be asked. 
-- If the person enters the correct answer to the question then print the password on the screen otherwise print appropriate error message. 
+::: center
+::: asidebox
+If the secret question is answered correctly, the username gets
+pre-filled during the redirection to the *Login* page, the user need
+only enter the password.
+:::
 
-5) **dating.html** and **styles.css**:
+::: asidebox
+The redirection to *Login* on entering wrong credentials in the *Forgot*
+page is deliberate as it slows down a malicious agent trying to access
+an account
+:::
+:::
 
-- Create a decent input interface with proper labels and input boxes for a person to fill in his/her/their personal details. 
-- Those details should correspond to the fields in students.json, i.e. the person's "IITB Roll Number", "Name", "Year of Study", "Age", "Gender",  "Interests", "Hobbies", "Email" and "Photo".
-- For "Gender", create a set of radio buttons to choose a single option.
-- For "Interests" and "Hobbies", create a set of checkboxes to choose multiple options for each.
-- There should be some sort of a "Submit" button which on clicking should "find" the person's "right match".
-- Provide a "Logout" button as well, that takes back to the login screen.
-- You can assume that the person will always give valid non-empty responses.
+## Signup
 
-6) **scroll_or_swipe.html**
+The *Signup* page is hosted at [/signup](/signup){.uri}. A new user
+needs to enter their IITB roll number, a username, a password and a
+secret question-answer pair (to be used for password recovery). If an
+account of the given IITB roll number already exists, the user is
+alerted of the same. If an account with the given username already
+exists, this is also alerted to the user, along with suggestions for a
+unique username.
 
-- Provide a feature in the input interface (dating.html) to allow the person to scroll/swipe through all the students (their details and photo) present in students.json file. 
-- The person clicks on some "Scroll/Swipe" button in the input interface and a new page opens up where you can freely scroll/swipe through profiles.
+After this is complete, the user is redirected to the *Complete Profile*
+page. Here, prompts are given for the user to enter their name, email
+address, year of study, age, gender, interests and hobbies. The user can
+then click on 'Complete Profie' and they are redirected to the
+*Dashboard*.
 
-7) **script.js**
+## Dashboard
 
-- The "right match" of a person should have significant (not necessarily the maximum) intersections in "Interests" and/or "Hobbies" with that person. 
-- Alongside this, you can create any criteria (of your own will) to decide a "right match" of a person.
-- Note that the "right match" of a person is not the person itself. That’s how dating works!
-- If you fail to find an apt "right match" (according to whatever criteria you use), then give an appropriate message in the output interface.
-- If there are multiple matches (according to your criteria), then you should break ties arbitrarily and return only one match.
-- The "right match" isn’t necessarily fixed for any person. It may depend on how you are finding it.
+The *Dashboard* is hosted at [/dashboard](/dashboard){.uri}. It consists
+of a lively little greeting message, a stats section and an inbox
+section.
 
-8) **match.html**
+::: center
+::: asidebox
+The little quip you see under the greeting is newly generated every time
+for maximum quirkiness each time you log in.
+:::
+:::
 
-- OPENS IN A NEW TAB.
-- The same CSS and Javascript files will be used, i.e. style.css and script.js
-- If you fail in finding the "right match", then you should have displayed an error message on the dating.html page.
+### Stats Section
 
+*Looking For a Date?* keeps track of two stats on your profile: **View
+Count** and **Like Count**.
 
+-   Your view count is the number of times your profile has been opened
+    by other users. Note that a particular user can view your profile
+    only once in each session (each time they log in). This is to avoid
+    increase of view count simply upon refreshing the profile page
+    multiple times.
 
-## Customisations
+-   Your like count is the number of users who have liked your profile.
+    Each user can like your profile atmost once. There is no option of
+    'unliking' a profie.
 
-- Add IITB Logo and IITB Landmark picture.
+### Inbox Section
 
-- (NECESSARY): The scroll or swipe page shows matches in descending order of common interests and hobbies.
+*Looking For a Date?* provides a unique feature called ***QuickChat***.
+*QuickChat* is a text-based messaging feature completely contained
+withing the website. It is suitable for sending greeting messages,
+deciding on meeting locations and so on.
 
-- (Highly Recommended): In the scroll_or_swipe display of all the students, give a button which takes you to this particular user's profile page where you can see THEIR BIO, THEIR LIKE METER and other stats.
+The *QuickChat* inbox in the *Dashboard* provides links to open the
+chats of those who have newly messaged you. If you want to send someone
+a message, click on the *Explore* option in the header, select the
+person you want to message and open their *QuickChat*.
 
-- Homepage for users not logged in / signed up.
+## My Profile
 
-- (COMPLICATED. SEE LINKS IN THE PROBLEM STATEMENT): Mailing the right match: After the "right match" is decided, you can provide an option to contact the "right match" by mailing them an email from your mail ID.
+*My Profile* is hosted at [/profile](/profile){.uri}. It allows you to
+edit the information you provided during signup, such as age, interests,
+hobbies and so on.
 
-- Profile pages (yourself and others): Images of both in your camera
-- (INCLUDES CHAT FEATURE, RATING, VIEW STATS, LIKE STATS, RECENTLY VIEWED, BIO, etc.)
+::: center
+::: asidebox
+To use a file on your local machine, copy it into the `public/imgs/`
+directory. Then, enter `/imgs/<filename>` in the profile photo input
+field. The same instructions are also available if you click on the
+'Profile Photo URL' label.
+:::
+:::
 
-- Sound Effects: Add a sound effect when you click find the right match (a "hopeful dot dot dot" sound), and another one when a match is found (in my mind it's the "phonepe payment made" sound), another when no match is found. Add a scroll sound effect on the scroll_or_swipe.html page too.
+You can click on either the **Update Profile** or **Update and Find
+Match** buttons depending on whether or not you want to find a match
+now. Clicking the first button redirects you to the *Dashboard* with a
+'Profile Updated Successfully' message, and clicking the second button
+takes you to *Match*.
 
-- Graphics: No match is found should display a "lonely heart flying around looking" animation. When the right match is found, try making it pop with an increase in size and the confetti spilling over from the sides. On the login page, a "two hearts happily flying around" animation.
+## Match
 
-- Filters: Make another page for filtering (possibly called filter.html?) where you will allow user to filter based on hobbies/interests, and show all matches in a list. (Filtering animation is the grey lines moving across while an update has been made.) Again here, you can click on each card in the list and it should redirect you to their profile page (see the 'highly recommended' point 2).
+*Match* is hosted at [/match](/match){.uri}. The matching algorithm of
+*Looking For a Date?* factors in common interests, hobbies and the age
+difference to find a suitable match for you.
 
-- On the signup page, a little button which suggests cute usernames, like "CampusCupid".
+If a match is found, the page rendered displays the bio of the match,
+along with a clickable link named 'Find out what you have in common'.
+There are also options view their profile page or connect via
+*QuickChat*. Alternatively, you can explore other profiles by clicking
+on the 'View More Profiles' button.
 
-- Where you show the right match, provide a button redirecting you to scroll or swipe page.
+If no match was found, a different page is rendered which has a
+reassuring message and the option to explore more profiles.
 
-- Create an about page for the to display to users who aren't logged in (perhaps at the bottom of the login and signup pages).
+### The Matching Algorithm
 
-- (ASK KAVYA IF YOU CAN DO THIS) In case of "forgot password", send an email to the registered mail ID with the right password if they answer the secret question correctly.
+First, a list of **Suitable Profiles** is selected from the list of all
+uers, based on the users' gender. This matching algorithm matches 'Male'
+users to 'Female' users, 'Female' users to 'Male' users and 'Other'
+users to 'Other' users.
 
-- Autofill the username (and password?) when you come back to the login page from the forgot password page and the password was revealed.
+For each suitable profile, the interests score $s_i$ is calculated as:
+$$s_i = \begin{cases} 
+      0 & i_s = 0 \\
+      \frac{i_c}{i_s} & \text{otherwise} \\
+   \end{cases}$$ Where $i_c$ are $i_s$ are the number of common
+interests and selected interests for this profile. Similarly, the
+hobbies score $s_h$ is calculated as: $$s_h = \begin{cases} 
+      0 & h_s = 0 \\
+      \frac{h_c}{h_s} & \text{otherwise} \\
+   \end{cases}$$
 
-- Customise the criteria for selection of the right match. (not of utmost priority.)
+Then, the net score of each profile is given by:
 
-- Improve the authentication and security.
+$$s = 0.6s_i+0.4s_h-0.1a$$ Where $a$ is the age difference between the
+user and this profile.
 
-## PTR
+::: center
+::: asidebox
+The reason behind dividing by the number of hobbies/interests selected
+is so as to disincentivize users from selecting all the boxed to try and
+match better.
+:::
+:::
 
-- The grading is more focused on design. MAKE SURE ALL THE SITES LOOK GOOD ON ALL SCREEN SIZES.
+The match is then the profile which scored the highest. If no profile
+got a positive score, it is deemed that no match is found for the user.
 
-- Code should be well structured and well commented.
+## Explore
 
-## References 
+*Explore* is hosted at [/explore](/explore){.uri}. It displays a list of
+all the suitable profiles in card format which the user can scroll
+through. Clicking on any of them redirects the user to the corresponding
+profile page.
 
-- https://www.w3schools.com/howto/howto_js_slideshow.asp
-- https://getbootstrap.com/
+## Profile Page
+
+*Profile* is hosted at [/profile/:profileID](/profile/:profileID){.uri},
+where `profileID` is this user's ID in the database. The *Profile* page
+consists of the corresponding user's details, such as name, year of
+study, profile photo, interests and hobbies. There is an option to like
+the user's profile. A stats section is also present which shows the
+number of views and likes that this user has on their profile. There is
+also an option to open up a *QuickChat* with this user.
+
+## Chat
+
+*Chat* is hosted at [/chat/:profileID](/chat/:profileID){.uri}, where
+your chat with the user having ID `profileID` is rendered. *Chat* allows
+for basic text-based messaging. It shows the message sent by you in
+green and to the right, and the messages sent by them in gray and to the
+left. You can send messages by entering them in the text box at the
+bottom and hitting 'Send'.
