@@ -148,11 +148,9 @@ uers, based on the users' gender. This matching algorithm matches 'Male'
 users to 'Female' users, 'Female' users to 'Male' users and 'Other'
 users to 'Other' users.
 
-For each suitable profile, the interests score $s_i$ is calculated as:
-$$s_i = \begin{cases} 
-      0 & i_s = 0 \\
-      \frac{i_c}{i_s} & \text{otherwise} \\
-   \end{cases}$$ Where $i_c$ are $i_s$ are the number of common
+For each suitable profile, the interests score $s_i$ is calculated as ($s_i$ is $0$ if $i_s$ is $0$):
+$$s_i = \frac{i_c}{i_s}$$
+Where $i_c$ are $i_s$ are the number of common
 interests and selected interests for this profile. Similarly, the
 hobbies score $s_h$ is calculated as: $$s_h = \begin{cases} 
       0 & h_s = 0 \\
