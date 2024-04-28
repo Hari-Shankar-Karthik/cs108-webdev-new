@@ -29,7 +29,7 @@ follow these steps:
 
 ## Login Page
 
-The *Login* page is hosted at [/login](/login). It allows existing
+The *Login* page is hosted at [localhost:8000/login](localhost:8000/login). It allows existing
 users to log in by entering the correct username and password that they
 had set. If a user enters their username and password correctly, they
 are redirected to their *Dashboard*. Entering an invalid
@@ -55,7 +55,7 @@ an account
 
 ## Signup
 
-The *Signup* page is hosted at [/signup](/signup). A new user
+The *Signup* page is hosted at [localhost:8000/signup](localhost:8000/signup). A new user
 needs to enter their IITB roll number, a username, a password and a
 secret question-answer pair (to be used for password recovery). If an
 account of the given IITB roll number already exists, the user is
@@ -71,7 +71,7 @@ then click on 'Complete Profie' and they are redirected to the
 
 ## Dashboard
 
-The *Dashboard* is hosted at [/dashboard](/dashboard). It consists
+The *Dashboard* is hosted at [localhost:8000/dashboard](localhost:8000/dashboard). It consists
 of a lively little greeting message, a stats section and an inbox
 section.
 
@@ -107,7 +107,7 @@ person you want to message and open their *QuickChat*.
 
 ## My Profile
 
-*My Profile* is hosted at [/profile](/profile). It allows you to
+*My Profile* is hosted at [localhost:8000/profile](localhost:8000/profile). It allows you to
 edit the information you provided during signup, such as age, interests,
 hobbies and so on.
 
@@ -124,7 +124,7 @@ takes you to *Match*.
 
 ## Match
 
-*Match* is hosted at [/match](/match). The matching algorithm of
+*Match* is hosted at [localhost:8000/match](localhost:8000/match). The matching algorithm of
 *Looking For a Date?* factors in common interests, hobbies and the age
 difference to find a suitable match for you.
 
@@ -169,14 +169,14 @@ got a positive score, it is deemed that no match is found for the user.
 
 ## Explore
 
-*Explore* is hosted at [/explore](/explore). It displays a list of
+*Explore* is hosted at [localhost:8000/explore](localhost:8000/explore). It displays a list of
 all the suitable profiles in card format which the user can scroll
 through. Clicking on any of them redirects the user to the corresponding
 profile page.
 
 ## Profile Page
 
-*Profile* is hosted at [/profile/:profileID](/profile/:profileID),
+*Profile* is hosted at [localhost:8000/profile/:profileID](localhost:8000/profile/:profileID),
 where `profileID` is this user's ID in the database. The *Profile* page
 consists of the corresponding user's details, such as name, year of
 study, profile photo, interests and hobbies. There is an option to like
@@ -186,7 +186,7 @@ also an option to open up a *QuickChat* with this user.
 
 ## Chat
 
-*Chat* is hosted at [/chat/:profileID](/chat/:profileID), where
+*Chat* is hosted at [localhost:8000/chat/:profileID](localhost:8000/chat/:profileID), where
 your chat with the user having ID `profileID` is rendered. *Chat* allows
 for basic text-based messaging. It shows the message sent by you in
 green and to the right, and the messages sent by them in gray and to the
