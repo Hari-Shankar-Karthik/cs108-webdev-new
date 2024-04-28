@@ -37,6 +37,10 @@ username-password pair will display an alert. There are also options
 like *Forgot Password?* and *Signup* which will redirect to the
 respective routes.
 
+If the username and password are entered correctly but the user has not yet 
+linked their login credentials with their IITB Roll Number, a page appears prompting
+them to do so. Submitting this form redirects the user to their dashboard page.
+
 ## Forgot Password?
 
 The *Forgot Password?* page consists of a username prompt. If a valid
