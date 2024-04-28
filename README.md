@@ -3,25 +3,30 @@
 To get *Looking For a Date?* up and running on your local machine,
 follow these steps:
 
-1.  Download and unzip the server repository (you can download it from
+1.    Download and install Node.js from \url{https://nodejs.org/en/download}.
+    
+2.    Download and install MongoDB Compass from \url{https://www.mongodb.com/docs/compass/current/install/}. Follow the instructions specific to your operating system.
+
+
+3.  Download and unzip the server repository (you can download it from
     <https://github.com/Hari-Shankar-Karthik/cs108-webdev-new>).
 
-2.  Open a new terminal in the main directory of the server and type
+4.  Open a new terminal in the main directory of the server and type
 
                     npm install
 
-3.  Once this is complete, you are ready to seed *Looking For a Date?*
+5.  Once this is complete, you are ready to seed *Looking For a Date?*
     with login and student data. Copy the `login.json` and
     `students.json`. files into the `dbs/` directory (replace the extsting files, if there are any).
     Then, run the command
 
                     node seed.js
 
-5.  Now, you are ready to start the server. Run the command
+6.  Now, you are ready to start the server. Run the command
 
                     node index.js
 
-6.  The server is now up and running on port 8000. Open up a web browser
+7.  The server is now up and running on port 8000. Open up a web browser
     and go to [localhost:8000/login](localhost:8000/login) to
     start the fun.
 
@@ -112,11 +117,11 @@ person you want to message and open their *QuickChat*.
 ## My Profile
 
 *My Profile* is hosted at [localhost:8000/profile](localhost:8000/profile). It allows you to
-edit the information you provided during signup, such as age, interests,
+edit the information you provided during signup, such as age, inteerests,
 hobbies and so on.
 
-To use a file on your local machine, copy it into the `public/imgs/`
-directory. Then, enter `/imgs/<filename>` in the profile photo input
+To use a file on your local machine, copy it into the `photos/`
+directory. Then, enter `photos/<filename>` in the profile photo input
 field. The same instructions are also available if you click on the
 'Profile Photo URL' label.
 
